@@ -50,7 +50,7 @@ Here's the old, slow, and convoluted way you'd do this:
 
 You can now use any font in your emails &ndash; without having to use art software like Photoshop or Sketch!
 
-It supports system-wide fonts out of the box, but you can pass a file path if you wish to use a custom non-standard font.
+It supports system-wide fonts out of the box, but you can pass a file path if you wish to use a custom non-standard font.  You can also customize its kerning, anchor, color/fill, stroke, font size (even in points if needed), add custom attributes to the HTML tag, and more!  See [Usage](#usage) below for its full API reference and documentation.
 
 Of course you'll need to expose `customFont` to your email templates as a local variable, which is easy.
 
@@ -63,8 +63,6 @@ var locals = {
 
 // ...
 ```
-
-> It uses [Node.js][node], [nodemailer][nodemailer], and [nodemailer-base64-to-s3][nodemailer-base64-to-s3]. This package was built for [CrocodileJS][crocodile-url] and inspired by [font-awesome-assets][font-awesome-assets].
 
 
 ## Index
