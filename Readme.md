@@ -18,7 +18,7 @@ Here's the old, slow, and convoluted way you'd do this:
 
 1. Typically you'd have to open Photoshop, GIMP, or Sketch (wait for the updates to finish), and then create an image with this text, select the font, color, and then save it as an image.
 2. Then upload it somewhere or have to wait until it deploys to production so you have a valid non-local URL (which is prone to caching in Gmail &ndash; in other words... if you ever need to make a slight adjustment to it then you have to completely rename the file).
-3. Reference the image in your HTML and try to rememember it's dimensions, or have to open up the art software again to get dimensions. What about Retina? What if you need to change the size or color of the font? What if you need to convert points to pixels? Just forget it...  It's too complicated and time consuming, and now your emails will look boring like they always did! :frown: :rage:
+3. Reference the image in your HTML and try to rememember it's dimensions, or have to open up the art software again to get dimensions. What about Retina? What if you need to change the size or color of the font? What if you need to convert points to pixels? Just forget it...  It's too complicated and time consuming, and now your emails will look boring like they always did! :frowning: :rage:
 
 ## New Approach
 
