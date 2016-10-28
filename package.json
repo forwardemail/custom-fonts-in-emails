@@ -1,0 +1,59 @@
+{
+  "name": "custom-fonts-in-emails",
+  "description": "An extremely easy way to use custom fonts in emails without having to use art software. This package was built for @CrocodileJS.",
+  "version": "0.0.0",
+  "author": "Nick Baugh <niftylettuce@gmail.com>",
+  "bugs": "https://github.com/crocodilejs/custom-fonts-in-emails/issues",
+  "dependencies": {
+    "lodash": "^4.16.4",
+    "os-fonts": "^0.2.0",
+    "svg2png": "^4.0.0",
+    "text-to-svg": "^3.0.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.11.4",
+    "babel-preset-crocodile": "^1.0.0",
+    "eslint-config-crocodile": "^1.0.0"
+  },
+  "engines": {
+    "node": ">= 6.x"
+  },
+  "homepage": "https://github.com/crocodilejs/custom-fonts-in-emails",
+  "keywords": [
+    "awesome",
+    "base64",
+    "bootstrap",
+    "btoa",
+    "convert",
+    "converter",
+    "data",
+    "data-attr",
+    "data-uri",
+    "email",
+    "encoded",
+    "export",
+    "fa",
+    "font",
+    "fontawesome",
+    "html",
+    "icon",
+    "image",
+    "img",
+    "png",
+    "render",
+    "svg",
+    "tag",
+    "to",
+    "uri"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "repository": "crocodilejs/custom-fonts-in-emails",
+  "scripts": {
+    "compile": "rm -rf lib/ && babel -d lib src",
+    "lint": "eslint .",
+    "prepublish": "npm run test",
+    "test": "npm run lint && npm run compile",
+    "watch": "babel -w -d lib src"
+  }
+}
