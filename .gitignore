@@ -9,3 +9,4 @@ logs
 npm-debug.log*
 *.idea
 lib
+coverage/

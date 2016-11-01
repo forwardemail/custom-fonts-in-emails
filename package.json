@@ -5,15 +5,23 @@
   "author": "Nick Baugh <niftylettuce@gmail.com>",
   "bugs": "https://github.com/crocodilejs/custom-fonts-in-emails/issues",
   "dependencies": {
+    "es6-promisify": "^5.0.0",
+    "fast-levenshtein": "^2.0.5",
     "lodash": "^4.16.4",
-    "os-fonts": "^0.2.0",
+    "os-fonts": "^0.3.1",
     "svg2png": "^4.0.0",
-    "text-to-svg": "^3.0.1"
+    "text-to-svg": "^3.0.1",
+    "underscore.string": "^3.3.4"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
     "babel-preset-crocodile": "^1.0.0",
-    "eslint-config-crocodile": "^1.0.0"
+    "chai": "^3.5.0",
+    "codecov": "^1.0.1",
+    "dirty-chai": "^1.2.2",
+    "eslint-config-crocodile": "^1.0.0",
+    "istanbul": "^1.1.0-alpha.1",
+    "mocha": "^2.5.3"
   },
   "engines": {
     "node": ">= 6.x"
@@ -50,10 +58,12 @@
   "main": "lib/index.js",
   "repository": "crocodilejs/custom-fonts-in-emails",
   "scripts": {
+    "analyze-coverage": "node_modules/.bin/babel-node node_modules/.bin/istanbul cover node_modules/.bin/_mocha",
+    "check-coverage": "node_modules/.bin/babel-node node_modules/.bin/istanbul check-coverage",
     "compile": "rm -rf lib/ && babel -d lib src",
+    "coverage": "rm -rf coverage/ && npm run analyze-coverage && npm run check-coverage && node_modules/.bin/codecov",
     "lint": "eslint .",
-    "prepublish": "npm run test",
-    "test": "npm run lint && npm run compile",
+    "test": "npm run lint && npm run compile && npm run coverage",
     "watch": "babel -w -d lib src"
   }
 }
