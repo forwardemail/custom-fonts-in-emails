@@ -16,7 +16,7 @@ const useTypes = [
   'system'
 ];
 
-const fontExtensions = [ 'otf', 'ttf', 'woff' ];
+const fontExtensions = [ 'otf', 'OTF', 'ttf', 'TTF', 'woff', 'WOFF' ];
 
 let defaults = {
   text: '',

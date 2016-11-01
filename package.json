@@ -5,6 +5,7 @@
   "author": "Nick Baugh <niftylettuce@gmail.com>",
   "bugs": "https://github.com/crocodilejs/custom-fonts-in-emails/issues",
   "dependencies": {
+    "babel-plugin-transform-runtime": "^6.15.0",
     "es6-promisify": "^5.0.0",
     "fast-levenshtein": "^2.0.5",
     "lodash": "^4.16.4",
