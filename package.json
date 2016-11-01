@@ -9,7 +9,7 @@
     "es6-promisify": "^5.0.0",
     "fast-levenshtein": "^2.0.5",
     "lodash": "^4.16.4",
-    "os-fonts": "^0.3.1",
+    "os-fonts": "github:niftylettuce/os-fonts",
     "svg2png": "^4.0.0",
     "text-to-svg": "^3.0.1",
     "underscore.string": "^3.3.4"
