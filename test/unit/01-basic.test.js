@@ -11,6 +11,18 @@ const fontSize = '24px';
 
 describe('custom-fonts-in-emails', () => {
 
+  it('should trim and resize', async () => {
+    try {
+      await customFonts.img({
+        text,
+        trim: true,
+        resizeToFontSize: true
+      });
+    } catch (err) {
+      throw err;
+    }
+  });
+
   _.each([ '', 0, 100 ], val => {
     it('should throw an error for invalid `options.trimTolerance` values', async () => {
       let e;
@@ -121,6 +133,28 @@ describe('custom-fonts-in-emails', () => {
         'utf8'
       );
       expect(svg.trim()).to.equal(expectedSvg.trim());
+    } catch (err) {
+      throw err;
+    }
+  });
+
+  it('should support custom background color for img', async () => {
+    try {
+      const str = await customFonts.img({
+        text,
+        backgroundColor: 'red'
+      });
+      const expectedColor = await promisify(fs.readFile, fs)(
+        path.join(__dirname, '..', 'fixtures', 'color-img.html'),
+        'utf8'
+      );
+      expect(str.trim()).to.equal(expectedColor.trim());
+      //
+      // TODO: it'd be cool to use these two packages
+      // to accurately check the background color from sharp()
+      // https://www.npmjs.com/package/color
+      // https://www.npmjs.com/package/get-canvas-pixel-color
+      //
     } catch (err) {
       throw err;
     }

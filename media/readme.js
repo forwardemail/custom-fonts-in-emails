@@ -7,10 +7,8 @@ const options = {
   text: 'Make something people want',
   fontNameOrPath: path.join(__dirname, '..', 'test', 'fixtures', 'GoudyBookletter1911'),
   fontColor: 'white',
-  fontSize: 40,
-  attrs: {
-    style: 'background-color: #ff6600;'
-  }
+  backgroundColor: '#ff6600',
+  fontSize: 40
 };
 
 const promises = _.map([ 'svg', 'img', 'png', 'png2x', 'png3x' ], method => {

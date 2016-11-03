@@ -26,9 +26,10 @@ let defaults = {
   fontNameOrPath: 'Arial',
   fontSize: '24px',
   fontColor: '#000',
+  backgroundColor: 'transparent',
   supportsFallback: true,
-  resizeToFontSize: true,
-  trim: true,
+  resizeToFontSize: false,
+  trim: false,
   trimTolerance: 10,
   attrs: {},
   textToSvg: {
@@ -79,6 +80,10 @@ export async function setOptions(options) {
   // ensure `fontColor` is a string
   if (!_.isString(options.fontColor) || s.isBlank(options.fontColor))
     throw new Error('`fontColor` must be a String and not blank');
+
+  // ensure `backgroundColor` is a string
+  if (!_.isString(options.backgroundColor) || s.isBlank(options.backgroundColor))
+    throw new Error('`backgroundColor` must be a String and not blank');
 
   // ensure supportsFallback is a boolean else true
   if (!_.isBoolean(options.supportsFallback))
@@ -168,7 +173,7 @@ export async function setOptions(options) {
 
 }
 
-function renderFallback(text, fontSize, fontColor, attrs) {
+function renderFallback(text, fontSize, fontColor, backgroundColor, attrs) {
   attrs.title = text;
   attrs.alt = text;
   attrs.style = attrs.style || '';
@@ -176,6 +181,7 @@ function renderFallback(text, fontSize, fontColor, attrs) {
   attrs.style += `font-size: ${fontSize / 2}px;`;
   attrs.style += `line-height: ${fontSize}px;`;
   attrs.style += 'text-align: center;';
+  attrs.style += `background-color: ${backgroundColor};`;
   return attrs;
 }
 
@@ -187,11 +193,20 @@ function applyAttributes($el, attrs) {
 }
 
 export async function svg(options) {
+
   try {
     options = await setOptions(options);
     const textToSvg = await load(options.fontPath);
     const str = textToSvg.getSVG(options.text, options.textToSvg);
     let $svg = $(str);
+    const $rect = $('<rect>');
+    $rect.attr('width', $svg.attr('width'));
+    $rect.attr('height', $svg.attr('height'));
+    $rect.attr('fill', options.backgroundColor);
+    $svg.prepend($rect);
+    $svg.attr('width', Math.round(parseFloat($svg.attr('width'))));
+    $svg.attr('height', Math.round(parseFloat($svg.attr('height'))));
+    $svg.attr('viewBox', `0 0 ${$svg.attr('width')} ${$svg.attr('height')}`);
     $svg = applyAttributes($svg, options.attrs);
     return $.html($svg);
   } catch (err) {
@@ -213,6 +228,7 @@ export async function img(options) {
         options.text,
         $svg.attr('height'),
         options.fontColor,
+        options.backgroundColor,
         options.attrs
       );
     $img = applyAttributes($img, options.attrs);
@@ -240,23 +256,19 @@ export async function png(options, scale) {
     // but this feature isn't available yet
     // https://github.com/svg/svgo/issues/67
     //
-    // so instead what we have to do is multiply the scale itself by 1.25
-    // to get a large enough svg that when rendered it will look OK after trimming
-    // and then we render it as a png, trim it, then resize it down to the `fontSize`
-    // with a width calculated based off the given aspect ratio
-    //
 
     const fontSize = options.fontSize;
-    options.fontSize = Math.round(fontSize * scale * 2);
+    options.fontSize = Math.round(fontSize * scale);
     options.textToSvg.fontSize = options.fontSize;
 
     const str = await svg(options);
-
     const buf = new Buffer(str, 'utf8');
 
     const getImage = sharp(buf);
+
     if (options.trim)
       getImage.trim(options.trimTolerance);
+
     if (options.resizeToFontSize)
       getImage.resize(null, Math.round(fontSize * scale));
 
@@ -273,6 +285,7 @@ export async function png(options, scale) {
         options.text,
         Math.round(metadata.height / scale),
         options.fontColor,
+        options.backgroundColor,
         options.attrs
       );
     $img = applyAttributes($img, options.attrs);
