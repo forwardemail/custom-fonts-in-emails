@@ -1,14 +1,45 @@
 
+import _ from 'lodash';
+import $ from 'cheerio';
+import promisify from 'es6-promisify';
+import fs from 'fs';
 import path from 'path';
 import customFonts from '../../lib';
 
+const text = 'Hello World';
+const fontSize = '24px';
+
 describe('custom-fonts-in-emails', () => {
 
-  /*
-  it('should set defaults', () => {
-    // customFonts.setDefaults
+  _.each([ '', 0, 100 ], val => {
+    it('should throw an error for invalid `options.trimTolerance` values', async () => {
+      let e;
+      try {
+        await customFonts.setOptions({
+          trimTolerance: val
+        });
+      } catch (err) {
+        e = err;
+      } finally {
+        expect(e).to.be.an('error');
+      }
+    });
   });
-  */
+
+  _.each([ 'supportsFallback', 'resizeToFontSize', 'trim' ], opt => {
+    it(`should throw an error for non-Boolean \`options.${opt}\``, async () => {
+      let e;
+      try {
+        const opts = {};
+        opts[opt] = '';
+        await customFonts.setOptions(opts);
+      } catch (err) {
+        e = err;
+      } finally {
+        expect(e).to.be.an('error');
+      }
+    });
+  });
 
   it('should get file in ./fonts folder if used wrong extension', async () => {
     try {
@@ -65,27 +96,120 @@ describe('custom-fonts-in-emails', () => {
     }
   });
 
-  /*
-  it('should return svg', () => {
-    // svg
+  it('should have custom attributes when passing them', async () => {
+    try {
+      const svg = await customFonts.svg({
+        text,
+        attrs: {
+          foo: 'bar'
+        }
+      });
+      const $svg = $(svg);
+      expect($svg.attr('foo')).to.equal('bar');
+    } catch (err) {
+      throw err;
+    }
   });
 
-  it('should return img', () => {
-    // img
+  it('should return hello world svg', async () => {
+    try {
+      const svg = await customFonts.svg({
+        text
+      });
+      const expectedSvg = await promisify(fs.readFile, fs)(
+        path.join(__dirname, '..', 'fixtures', 'hello-world.svg'),
+        'utf8'
+      );
+      expect(svg.trim()).to.equal(expectedSvg.trim());
+    } catch (err) {
+      throw err;
+    }
   });
 
-  it('should return png@1x', () => {
-    // png
+  it('should set alt, title, and style on img and png', async () => {
+    try {
+      await Promise.all(_.map([ 'img', 'png' ], method => {
+        return new Promise(async (resolve, reject) => {
+          try {
+            const str = await customFonts[method]({ text });
+            const $img = $(str);
+            expect($img.attr('alt')).to.equal(text);
+            expect($img.attr('title')).to.equal(text);
+            expect($img.attr('style')).to.be.a.string().and.not.empty();
+            resolve();
+          } catch (err) {
+            reject(err);
+          }
+        });
+      }));
+    } catch (err) {
+      throw err;
+    }
   });
 
-  it('should return png@2x', () => {
-    // png2x
+  it('should return hello world img', async () => {
+    try {
+      const img = await customFonts.img({ text });
+      const expectedImg = await promisify(fs.readFile, fs)(
+        path.join(__dirname, '..', 'fixtures', 'hello-world-img.html'),
+        'utf8'
+      );
+      expect(img.trim()).to.equal(expectedImg.trim());
+    } catch (err) {
+      throw err;
+    }
   });
 
-  it('should return png@3x', () => {
-    // png3x
+  it('should return png@1x', async () => {
+    try {
+      const png = await customFonts.png({ text, fontSize });
+      const expectedPng = await promisify(fs.readFile, fs)(
+        path.join(__dirname, '..', 'fixtures', 'hello-world-png.html'),
+        'utf8'
+      );
+      expect(png.trim()).to.equal(expectedPng.trim());
+    } catch (err) {
+      throw err;
+    }
   });
-  */
+
+  it('should throw an error if we pass an invalid scale to png', async () => {
+    let e;
+    try {
+      await customFonts.png({ text }, 'foo');
+    } catch (err) {
+      e = err;
+    } finally {
+      expect(e).to.be.an('error');
+      expect(e.message).to.equal('`scale` must be a Number');
+    }
+  });
+
+  it('should return png@2x', async () => {
+    try {
+      const png = await customFonts.png2x({ text, fontSize });
+      const expectedPng = await promisify(fs.readFile, fs)(
+        path.join(__dirname, '..', 'fixtures', 'hello-world-png@2x.html'),
+        'utf8'
+      );
+      expect(png.trim()).to.equal(expectedPng.trim());
+    } catch (err) {
+      throw err;
+    }
+  });
+
+  it('should return png@3x', async () => {
+    try {
+      const png = await customFonts.png3x({ text, fontSize });
+      const expectedPng = await promisify(fs.readFile, fs)(
+        path.join(__dirname, '..', 'fixtures', 'hello-world-png@3x.html'),
+        'utf8'
+      );
+      expect(png.trim()).to.equal(expectedPng.trim());
+    } catch (err) {
+      throw err;
+    }
+  });
 
   it('should throw an error if we did not have a close match at all', async () => {
     let e;
