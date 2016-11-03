@@ -135,7 +135,7 @@ describe('custom-fonts-in-emails', () => {
             const $img = $(str);
             expect($img.attr('alt')).to.equal(text);
             expect($img.attr('title')).to.equal(text);
-            expect($img.attr('style')).to.be.a.string().and.not.empty();
+            expect($img.attr('style')).to.be.a('string').and.not.be.empty();
             resolve();
           } catch (err) {
             reject(err);

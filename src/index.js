@@ -169,8 +169,6 @@ export async function setOptions(options) {
 }
 
 function renderFallback(text, fontSize, fontColor, attrs) {
-  console.log('renderFallback', 'text', text, 'fontSize', fontSize, 'fontColor', fontColor);
-  console.log('attrs', attrs);
   attrs.title = text;
   attrs.alt = text;
   attrs.style = attrs.style || '';
@@ -178,16 +176,11 @@ function renderFallback(text, fontSize, fontColor, attrs) {
   attrs.style += `font-size: ${fontSize / 2}px;`;
   attrs.style += `line-height: ${fontSize}px;`;
   attrs.style += 'text-align: center;';
-  console.log('attrs now', attrs);
   return attrs;
 }
 
 function applyAttributes($el, attrs) {
-  console.log('applyAttributes');
-  console.log('$el', $el);
-  console.log('attrs', attrs);
   _.each(_.keys(attrs), key => {
-    console.log('key', key, 'value', attrs[key]);
     $el.attr(key, attrs[key]);
   });
   return $el;
@@ -199,7 +192,6 @@ export async function svg(options) {
     const textToSvg = await load(options.fontPath);
     const str = textToSvg.getSVG(options.text, options.textToSvg);
     let $svg = $(str);
-    console.log('WOO BAZ options.attrs', options.attrs);
     $svg = applyAttributes($svg, options.attrs);
     return $.html($svg);
   } catch (err) {
@@ -209,6 +201,7 @@ export async function svg(options) {
 
 export async function img(options) {
   try {
+    options = await setOptions(options);
     const str = await svg(options);
     const $svg = $(str);
     let $img = $('<img>');
