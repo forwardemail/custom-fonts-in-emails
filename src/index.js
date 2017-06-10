@@ -10,7 +10,7 @@ import levenshtein from 'fast-levenshtein';
 import TextToSvg from 'text-to-svg';
 import sharp from 'sharp';
 
-const load = promisify(TextToSvg.load, TextToSvg);
+TextToSvg.load = promisify(TextToSvg.load, TextToSvg);
 
 const useTypes = [
   'user',
@@ -196,7 +196,7 @@ export async function svg(options) {
 
   try {
     options = await setOptions(options);
-    const textToSvg = await load(options.fontPath);
+    const textToSvg = await TextToSvg.load(options.fontPath);
     const str = textToSvg.getSVG(options.text, options.textToSvg);
     let $svg = $(str);
     const $rect = $('<rect>');
