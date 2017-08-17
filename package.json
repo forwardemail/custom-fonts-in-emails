@@ -6,24 +6,24 @@
   "bugs": "https://github.com/crocodilejs/custom-fonts-in-emails/issues",
   "dependencies": {
     "babel-plugin-transform-runtime": "^6.15.0",
-    "cheerio": "^0.22.0",
+    "cheerio": "^1.0.0-rc.2",
     "es6-promisify": "^5.0.0",
     "fast-levenshtein": "^2.0.5",
     "lodash": "^4.16.4",
-    "os-fonts": "^0.3.2",
-    "sharp": "^0.16.2",
+    "os-fonts": "^0.4.0",
+    "sharp": "^0.18.2",
     "text-to-svg": "^3.0.1",
     "underscore.string": "^3.3.4"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
     "babel-preset-crocodile": "^1.0.0",
-    "chai": "^3.5.0",
-    "codecov": "^1.0.1",
-    "dirty-chai": "^1.2.2",
+    "chai": "^4.1.1",
+    "codecov": "^2.3.0",
+    "dirty-chai": "^2.0.1",
     "eslint-config-crocodile": "^1.0.0",
     "istanbul": "^1.1.0-alpha.1",
-    "mocha": "^2.5.3"
+    "mocha": "^3.5.0"
   },
   "engines": {
     "node": ">= 6.x"
