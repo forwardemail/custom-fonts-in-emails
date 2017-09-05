@@ -2,6 +2,7 @@
   "presets": [ "crocodile" ],
   "sourceMaps": "inline",
   "plugins": [
-    "transform-runtime"
+    "transform-runtime",
+    "add-module-exports"
   ]
 }
