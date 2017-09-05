@@ -1,7 +1,8 @@
 {
   "name": "custom-fonts-in-emails",
-  "description": "An extremely easy way to use custom fonts in emails without having to use art software. This package was built for @CrocodileJS.",
-  "version": "0.0.3",
+  "description":
+    "An extremely easy way to use custom fonts in emails without having to use art software. This package was built for @CrocodileJS.",
+  "version": "0.0.4",
   "author": "Nick Baugh <niftylettuce@gmail.com>",
   "bugs": "https://github.com/crocodilejs/custom-fonts-in-emails/issues",
   "dependencies": {
@@ -61,10 +62,13 @@
   "main": "lib/index.js",
   "repository": "crocodilejs/custom-fonts-in-emails",
   "scripts": {
-    "analyze-coverage": "node_modules/.bin/babel-node node_modules/.bin/istanbul cover node_modules/.bin/_mocha",
-    "check-coverage": "node_modules/.bin/babel-node node_modules/.bin/istanbul check-coverage",
+    "analyze-coverage":
+      "node_modules/.bin/babel-node node_modules/.bin/istanbul cover node_modules/.bin/_mocha",
+    "check-coverage":
+      "node_modules/.bin/babel-node node_modules/.bin/istanbul check-coverage",
     "compile": "rm -rf lib/ && babel -d lib src",
-    "coverage": "rm -rf coverage/ && npm run analyze-coverage && npm run check-coverage && node_modules/.bin/codecov",
+    "coverage":
+      "rm -rf coverage/ && npm run analyze-coverage && npm run check-coverage && node_modules/.bin/codecov",
     "lint": "eslint .",
     "test": "npm run lint && npm run compile && npm run coverage",
     "watch": "babel -w -d lib src"
