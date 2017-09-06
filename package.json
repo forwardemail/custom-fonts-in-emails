@@ -1,17 +1,21 @@
 {
   "name": "custom-fonts-in-emails",
-  "description":
-    "An extremely easy way to use custom fonts in emails without having to use art software. This package was built for @CrocodileJS.",
+  "description": "An extremely easy way to use custom fonts in emails without having to use art software. This package was built for @CrocodileJS.",
   "version": "1.0.0",
   "author": "Nick Baugh <niftylettuce@gmail.com>",
   "bugs": "https://github.com/crocodilejs/custom-fonts-in-emails/issues",
   "xo": {
     "extends": "prettier",
-    "plugins": ["prettier", "mocha"],
+    "plugins": [
+      "prettier",
+      "mocha"
+    ],
     "parserOptions": {
       "sourceType": "script"
     },
-    "envs": ["mocha"],
+    "envs": [
+      "mocha"
+    ],
     "rules": {
       "prettier/prettier": [
         "error",
@@ -28,8 +32,14 @@
           "ignoreUrls": true
         }
       ],
-      "max-params": ["error", 5],
-      "complexity": ["error", 24],
+      "max-params": [
+        "error",
+        5
+      ],
+      "complexity": [
+        "error",
+        24
+      ],
       "capitalized-comments": "off",
       "camelcase": "off",
       "no-warning-comments": "off",
@@ -42,7 +52,7 @@
     "deasync": "^0.1.10",
     "fast-levenshtein": "^2.0.5",
     "lodash": "^4.16.4",
-    "os-fonts": "niftylettuce/os-fonts",
+    "os-fonts": "^0.4.1",
     "sharp": "^0.18.2",
     "text-to-svg": "^3.0.1",
     "underscore.string": "^3.3.4"

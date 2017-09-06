@@ -2226,9 +2226,9 @@ optionator@^0.8.2:
     type-check "~0.3.2"
     wordwrap "~1.0.0"
 
-os-fonts@niftylettuce/os-fonts:
-  version "0.4.0"
-  resolved "https://codeload.github.com/niftylettuce/os-fonts/tar.gz/2b248b4c757be277b08f49f4dbde4dc1a27662a8"
+os-fonts@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/os-fonts/-/os-fonts-0.4.1.tgz#34c742590b7bb39350d3ad6c1397cd1a556d252a"
   dependencies:
     recursive-readdir "^2.2.1"
     recursive-readdir-sync "^1.0.6"
