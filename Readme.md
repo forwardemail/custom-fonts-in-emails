@@ -1,4 +1,3 @@
-
 # custom-fonts-in-emails
 
 [![Slack Status][slack-image]][slack-url]
@@ -10,45 +9,43 @@
 
 **An extremely easy way to use custom fonts in emails without having to use art software.**
 
-* :art: Outputs optimized SVG, PNG, and Base64 inlined images with optional support for @2x and @3x Retina versions (uses the incredibly fast and performant [sharp][sharp]).
-* :bulb: Automatic smart-detection of font names spelled incorrectly (or with the wrong extension) with 50% accuracy (uses [fast-levenshtein][fast-levenshtein] and checks for at least 50% distance match).
-* :crystal_ball: Detects user, local, network, and system fonts using [os-fonts][os-fonts] (e.g. you don't need to write `Arial.ttf`, you can just write `Arial`).
-* :tada: Supports all WOFF, OTF, and TTF fonts (both with TrueType `glyf` and PostScript `cff` outlines).
-* :sparkles: Use with recommended packages [nodemailer][nodemailer] and [nodemailer-base64-to-s3][nodemailer-base64-to-s3], or simply use [CrocodileJS][crocodile-url] (has this built-in).
-* :pear: Pairs great with [font-awesome-assets][font-awesome-assets] and [juice][juice] (see [CrocodileJS's][crocodile-url] usage as an example).
-* :white_check_mark: Supports offline and missing image support by automatically adding `alt`, `title`, and `style` attributes of `color` and `font-size` based upon the options passed.
-
+-   :art: Outputs optimized SVG, PNG, and Base64 inlined images with optional support for @2x and @3x Retina versions (uses the incredibly fast and performant [sharp][sharp]).
+-   :bulb: Automatic smart-detection of font names spelled incorrectly (or with the wrong extension) with 50% accuracy (uses [fast-levenshtein][fast-levenshtein] and checks for at least 50% distance match).
+-   :crystal_ball: Detects user, local, network, and system fonts using [os-fonts][os-fonts] (e.g. you don't need to write `Arial.ttf`, you can just write `Arial`).
+-   :tada: Supports all WOFF, OTF, and TTF fonts (both with TrueType `glyf` and PostScript `cff` outlines).
+-   :sparkles: Use with recommended packages [nodemailer][nodemailer] and [nodemailer-base64-to-s3][nodemailer-base64-to-s3], or simply use [CrocodileJS][crocodile-url] (has this built-in).
+-   :pear: Pairs great with [font-awesome-assets][font-awesome-assets] and [juice][juice] (see [CrocodileJS's][crocodile-url] usage as an example).
+-   :white_check_mark: Supports offline and missing image support by automatically adding `alt`, `title`, and `style` attributes of `color` and `font-size` based upon the options passed.
 
 ## Index
 
-* [What does this do?](#what-does-this-do)
-  - [Old Approach](#old-approach)
-  - [New Approach](#new-approach)
-* [Examples](#examples)
-* [Install](#install)
-* [Usage](#usage)
-* [Options](#options)
-* [API](#api)
-* [Wishlist](#wishlist)
-* [Credits](#credits)
-* [License](#license)
+-   [What does this do?](#what-does-this-do)
+    -   [Old Approach](#old-approach)
+    -   [New Approach](#new-approach)
+-   [Examples](#examples)
+-   [Install](#install)
+-   [Usage](#usage)
+-   [Options](#options)
+-   [API](#api)
+-   [Wishlist](#wishlist)
+-   [Credits](#credits)
+-   [License](#license)
 
 > **Don't want to configure this yourself?**  Try [CrocodileJS][crocodile-url]!
 
-
 ## What does this do?
 
-* Imagine you find a really cool font on GitHub such as [GoudyBookletter1911][goudybookletter1911], or another font at sites like [DaFont][dafont] or [Font Squirrel][font-squirrel].
-* You want to use this font in your emails and write the text "Make something people want" with it to use as a footer graphic.  **:tada: Congratulations, because this package lets you do that with basically one line of code!**
-* Let's compare the old and new way (thanks to this package) to put custom fonts in emails.
+-   Imagine you find a really cool font on GitHub such as [GoudyBookletter1911][goudybookletter1911], or another font at sites like [DaFont][dafont] or [Font Squirrel][font-squirrel].
+-   You want to use this font in your emails and write the text "Make something people want" with it to use as a footer graphic.  **:tada: Congratulations, because this package lets you do that with basically one line of code!**
+-   Let's compare the old and new way (thanks to this package) to put custom fonts in emails.
 
 ### Old Approach
 
 Here's the old, slow, and convoluted way you'd do this:
 
-1. Typically you'd have to open Photoshop, GIMP, or Sketch (wait for the updates to finish), and then create an image with this text, select the font, color, and then save it as an image.
-2. Then upload it somewhere or have to wait until it deploys to production so you have a valid non-local URL (which is prone to caching in Gmail &ndash; in other words... if you ever need to make a slight adjustment to it then you have to completely rename the file).
-3. Reference the image in your HTML and try to rememember it's dimensions, or have to open up the art software again to get dimensions. What about Retina? What if you need to change the size or color of the font? What if you need to convert points to pixels? Just forget it...  It's too complicated and time consuming, and now your emails will look boring like they always did! :frowning: :rage:
+1.  Typically you'd have to open Photoshop, GIMP, or Sketch (wait for the updates to finish), and then create an image with this text, select the font, color, and then save it as an image.
+2.  Then upload it somewhere or have to wait until it deploys to production so you have a valid non-local URL (which is prone to caching in Gmail – in other words... if you ever need to make a slight adjustment to it then you have to completely rename the file).
+3.  Reference the image in your HTML and try to rememember it's dimensions, or have to open up the art software again to get dimensions. What about Retina? What if you need to change the size or color of the font? What if you need to convert points to pixels? Just forget it...  It's too complicated and time consuming, and now your emails will look boring like they always did! :frowning: :rage:
 
 ### New Approach
 
@@ -77,36 +74,33 @@ customFonts.png2x(options)
 
 <img width="461" height="51" src="https://cdn.rawgit.com/crocodilejs/custom-fonts-in-emails/master/art/png@2x.png" title="Make something people want" alt="Make something people want" style="color: white;font-size: 25.5px;line-height: 51px;text-align: center;background-color: #ff6600;">
 
-You can now use any font in your emails &ndash; without having to use art software like Photoshop or Sketch!
+You can now use any font in your emails – without having to use art software like Photoshop or Sketch!
 
 It supports system-wide fonts out of the box, but you can pass a file path if you wish to use a custom non-standard font.  You can also customize its kerning, anchor, color/fill, stroke, font size (even in points if needed), add custom attributes to the HTML tag, and more!  See [Usage](#usage), [Options](#options), and the [API](#api) reference below for more info.
 
 It even uses the [fast-levenshtein][fast-levenshtein] algorithm to detect the closest match to the spelling of a font (e.g. in case you mispellled `Arial` as `Arail`).
 
-
 ## Examples
 
-Using the options defined in [New Approach](#new approach) above, the following code provides examples of this package's [API](#api) methods.
+Using the options defined in [New Approach]\(#new approach) above, the following code provides examples of this package's [API](#api) methods.
 
-API Method and Preview | Image Type
----------------------- | ----------
-`customFonts.svg(options)` <img width="461" height="51" src="https://cdn.rawgit.com/crocodilejs/custom-fonts-in-emails/master/art/image.svg" style="background-color: #ff6600;color: white;font-size: 20px;line-height: 40px;text-align: center;" title="Make something people want" alt="Make something people want"> | SVG tag `<svg>`
-`customFonts.img(options)` <img width="461" height="51" src="https://cdn.rawgit.com/crocodilejs/custom-fonts-in-emails/master/art/img.svg" style="background-color: #ff6600;color: white;font-size: 20px;line-height: 40px;text-align: center;" title="Make something people want" alt="Make something people want"> | IMG tag `<img>` with Base64-encoded Inline SVG
-`customFonts.png(options, scale)` <img width="461" height="51" src="https://cdn.rawgit.com/crocodilejs/custom-fonts-in-emails/master/art/png.png" style="background-color: #ff6600;color: white;font-size: 20px;line-height: 40px;text-align: center;" title="Make something people want" alt="Make something people want"> | IMG tag `<img>` with Base64-encoded Inline PNG
-`customFonts.png@2x(options)` <img width="461" height="51" src="https://cdn.rawgit.com/crocodilejs/custom-fonts-in-emails/master/art/png@2x.png" style="background-color: #ff6600;color: white;font-size: 20px;line-height: 40px;text-align: center;" title="Make something people want" alt="Make something people want"> | IMG tag `<img>` with Base64-encoded Inline PNG @2x Resolution
-`customFonts.png@3x(options)` <img width="461" height="51" src="https://cdn.rawgit.com/crocodilejs/custom-fonts-in-emails/master/art/png@2x.png" style="background-color: #ff6600;color: white;font-size: 20px;line-height: 40px;text-align: center;" title="Make something people want" alt="Make something people want"> | IMG tag `<img>` with Base64-encoded Inline PNG @3x Resolution
+| API Method and Preview                                                                                                                                                                                                                                                                                                      | Image Type                                                    |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `customFonts.svg(options)` <img width="461" height="51" src="https://cdn.rawgit.com/crocodilejs/custom-fonts-in-emails/master/art/image.svg" style="background-color: #ff6600;color: white;font-size: 20px;line-height: 40px;text-align: center;" title="Make something people want" alt="Make something people want">      | SVG tag `<svg>`                                               |
+| `customFonts.img(options)` <img width="461" height="51" src="https://cdn.rawgit.com/crocodilejs/custom-fonts-in-emails/master/art/img.svg" style="background-color: #ff6600;color: white;font-size: 20px;line-height: 40px;text-align: center;" title="Make something people want" alt="Make something people want">        | IMG tag `<img>` with Base64-encoded Inline SVG                |
+| `customFonts.png(options, scale)` <img width="461" height="51" src="https://cdn.rawgit.com/crocodilejs/custom-fonts-in-emails/master/art/png.png" style="background-color: #ff6600;color: white;font-size: 20px;line-height: 40px;text-align: center;" title="Make something people want" alt="Make something people want"> | IMG tag `<img>` with Base64-encoded Inline PNG                |
+| `customFonts.png@2x(options)` <img width="461" height="51" src="https://cdn.rawgit.com/crocodilejs/custom-fonts-in-emails/master/art/png@2x.png" style="background-color: #ff6600;color: white;font-size: 20px;line-height: 40px;text-align: center;" title="Make something people want" alt="Make something people want">  | IMG tag `<img>` with Base64-encoded Inline PNG @2x Resolution |
+| `customFonts.png@3x(options)` <img width="461" height="51" src="https://cdn.rawgit.com/crocodilejs/custom-fonts-in-emails/master/art/png@2x.png" style="background-color: #ff6600;color: white;font-size: 20px;line-height: 40px;text-align: center;" title="Make something people want" alt="Make something people want">  | IMG tag `<img>` with Base64-encoded Inline PNG @3x Resolution |
 
 Lastly, here's what a broken image looks like that was attempted to be rendered with an API method.  It makes use of the option `supportsFallback` defined below in [Options](#options).  This is a really useful fallback for offline emails, invalid cached images, and more!
 
 <img width="461" height="51" src="https://cdn.rawgit.com/crocodilejs/custom-fonts-in-emails/master/art/fallback@2x.png" title="Make something people want" alt="Make something people want">
-
 
 ## Install
 
 ```bash
 npm install -s custom-fonts-in-emails
 ```
-
 
 ## Usage
 
@@ -135,37 +129,37 @@ import {
 
 If you plan to use this for outbound emails, then you'll want to make use of [nodemailer][nodemailer] and [nodemailer-base64-to-s3][nodemailer-base64-to-s3].  Or you can simply use [CrocodileJS][crocodile-url], which has this built-in already!
 
-
 ## Options
 
 The `options` argument in all [API](#api) methods is an Object that accepts the following properties:
 
-Property | Type | Description
--------- | :--: | -----------
-`text` | String | Text to write using the font family specified in `fontNameOrPath` (defaults to an empty String of `''`)
-`fontNameOrPath` | String | Name or file path of the font (defaults to `Arial` &ndash; note that by default we load user, local, network, and system fonts across any operating system using [os-fonts][os-fonts], so you can use any font installed!)
-`fontSize` | Number or String | Size of font **in pixels**, which is rounded to nearest whole Integer (this automatically sets `options.textToSvg.fontSize` &ndash; defaults to `24px`, but you don't need to specify the affix `px` as it is automatically stripped and converted to the nearest whole Integer using `Math.round(parseInt(val, 10))` &ndash; this value must be greater than 0)
-`fontColor` | String |  Valid hex color or rgba value to render the text fill color with with (defaults to `#000`)
-`backgroundColor` | String |  Valid hex color or rgba value to render the background color with (defaults to `transparent`)
-`supportsFallback` | Boolean | Ensure that the output image has fallback attributes `title` and `alt` (both set to the value of `options.text`), and `style` which is set to or concatenated with `color` set to `options.fontColor`, `font-size` set to `options.fontSize / 2` (for vertical centering we divide by 2), `line-height` set to `options.fontSize` affixed with `px`, and finally `text-align: center` &ndash not applicable to `customFonts.svg` (defaults to `true`)
-`resizeToFontSize` | Boolean | Ensure that the output image height is resized to `fontSize`, and its width is proportionally scaled &ndash; not applicable to `customFonts.svg` nor `customFonts.img` (defaults to `false`)
-`trim` | Boolean | Ensure that the output image is trimmed using [sharp][sharp]'s [trim][trim] API method &ndash; it trims "boring" pixels from the edges &ndash; not applicable to `customFonts.svg` nor `customFonts.img` (defaults to `false`)
-`trimTolerance` | Number | Must be from 1-99 inclusive, sets the trim tolerance value using [trim][trim] (defaults to `10`)
-`attrs` | Object | Attribute key-value pairs that will be applied to the returned tag (defaults to `{}`, e.g. if you want to make the image output a fixed height scaled proportionally, then you can do `{ style: 'height: 40px; width: auto;' }`, **this is useful if you want to add custom CSS classes, style attributes, or other attributes in general to the returned tags**)
-`textToSvg` | Object | Options defined in [textToSvg](#texttosvg) below which get passed to [text-to-svg][text-to-svg] (and subsequently [opentype.js][opentype.js]):
+| Property           |       Type       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------ | :--------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `text`             |      String      | Text to write using the font family specified in `fontNameOrPath` (defaults to an empty String of `''`)                                                                                                                                                                                                                                                                                                                                               |
+| `fontNameOrPath`   |      String      | Name or file path of the font (defaults to `Arial` – note that by default we load user, local, network, and system fonts across any operating system using [os-fonts][os-fonts], so you can use any font installed!)                                                                                                                                                                                                                                  |
+| `fontSize`         | Number or String | Size of font **in pixels**, which is rounded to nearest whole Integer (this automatically sets `options.textToSvg.fontSize` – defaults to `24px`, but you don't need to specify the affix `px` as it is automatically stripped and converted to the nearest whole Integer using `Math.round(parseInt(val, 10))` – this value must be greater than 0)                                                                                                  |
+| `fontColor`        |      String      | Valid hex color or rgba value to render the text fill color with with (defaults to `#000`)                                                                                                                                                                                                                                                                                                                                                            |
+| `backgroundColor`  |      String      | Valid hex color or rgba value to render the background color with (defaults to `transparent`)                                                                                                                                                                                                                                                                                                                                                         |
+| `supportsFallback` |      Boolean     | Ensure that the output image has fallback attributes `title` and `alt` (both set to the value of `options.text`), and `style` which is set to or concatenated with `color` set to `options.fontColor`, `font-size` set to `options.fontSize / 2` (for vertical centering we divide by 2), `line-height` set to `options.fontSize` affixed with `px`, and finally `text-align: center` &ndash not applicable to `customFonts.svg` (defaults to `true`) |
+| `resizeToFontSize` |      Boolean     | Ensure that the output image height is resized to `fontSize`, and its width is proportionally scaled – not applicable to `customFonts.svg` nor `customFonts.img` (defaults to `false`)                                                                                                                                                                                                                                                                |
+| `trim`             |      Boolean     | Ensure that the output image is trimmed using [sharp][sharp]'s [trim][trim] API method – it trims "boring" pixels from the edges – not applicable to `customFonts.svg` nor `customFonts.img` (defaults to `false`)                                                                                                                                                                                                                                    |
+| `trimTolerance`    |      Number      | Must be from 1-99 inclusive, sets the trim tolerance value using [trim][trim] (defaults to `10`)                                                                                                                                                                                                                                                                                                                                                      |
+| `attrs`            |      Object      | Attribute key-value pairs that will be applied to the returned tag (defaults to `{}`, e.g. if you want to make the image output a fixed height scaled proportionally, then you can do `{ style: 'height: 40px; width: auto;' }`, **this is useful if you want to add custom CSS classes, style attributes, or other attributes in general to the returned tags**)                                                                                     |
+| `textToSvg`        |      Object      | Options defined in [textToSvg](#texttosvg) below which get passed to [text-to-svg][text-to-svg] (and subsequently [opentype.js][opentype.js]):                                                                                                                                                                                                                                                                                                        |
 
 ### textToSvg
 
-Property | Type | Description
--------- | :--: | -----------
-`x` | Number | Horizontal position of the beginning of the text (defaults to `0`)
-`y` | Number | Vertical position of the baseline of the text (defaults to `0`)
-`fontSize` | Number | Size of the text in points (defaults to `options.fontSize`)
-`anchor` | String | Anchor of object in coordinate (defaults to `left top` &ndash; the String consists of `horizontal vertical`, where `horizontal` can be one of `left`, `center`, or `right`, and `vertical` can be one of `baseline`, `top`, `middle`, `bottom`)
-`attributes` | Object | Attribute key-value pairs that will be applied to the returned `<path>` element inside the `<svg>` tag (defaults to `{ fill: '#000', stroke: 'none' }` &ndash; note that if you specify `fontColor` then it will set `fill` equal to `fontColor`, but it can be overridden this attribute explicitly!)
-
+| Property     |  Type  | Description                                                                                                                                                                                                                                                                                      |
+| ------------ | :----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `x`          | Number | Horizontal position of the beginning of the text (defaults to `0`)                                                                                                                                                                                                                               |
+| `y`          | Number | Vertical position of the baseline of the text (defaults to `0`)                                                                                                                                                                                                                                  |
+| `fontSize`   | Number | Size of the text in points (defaults to `options.fontSize`)                                                                                                                                                                                                                                      |
+| `anchor`     | String | Anchor of object in coordinate (defaults to `left top` – the String consists of `horizontal vertical`, where `horizontal` can be one of `left`, `center`, or `right`, and `vertical` can be one of `baseline`, `top`, `middle`, `bottom`)                                                        |
+| `attributes` | Object | Attribute key-value pairs that will be applied to the returned `<path>` element inside the `<svg>` tag (defaults to `{ fill: '#000', stroke: 'none' }` – note that if you specify `fontColor` then it will set `fill` equal to `fontColor`, but it can be overridden this attribute explicitly!) |
 
 ## API
+
+> Please note that as of `v1.0.0` this API is synchronous and will block.  For an asynchronous version please use `v0.0.4` of this package.
 
 ### `customFonts.setDefaults(options)`
 
@@ -173,11 +167,11 @@ A function that accepts [options](#options) to set defaults for future use and r
 
 ### `customFonts.setOptions(options)`
 
-A function that accepts [options](#options) and returns a Promise, which resolves with refined `options`.
+A function that accepts [options](#options) and returns refined `options`.
 
 ### `customFonts.svg(options)`
 
-A function that accepts [options](#options) and returns a Promise, which resolves with a String of the `<svg>` HTML tag for the custom font.
+A function that accepts [options](#options) and returns with a String of the `<svg>` HTML tag for the custom font.
 
 This function takes the argument `options` and passes it to `customFonts.setOptions`.
 
@@ -203,59 +197,82 @@ Same as `customFonts.png`, except it returns an image with three as many pixels 
 
 ### `customFonts.getAvailableFontPaths()`
 
-A function that returns a Promise, which resolves with an Array of file paths for all of the user, local, network, and system fonts available on the current operating system.
+A function that returns an Array of file paths for all of the user, local, network, and system fonts available on the current operating system.
 
 ### `customFonts.getAvailableFontNames()`
 
 The same as `customFonts.getAvailableFontPaths`, except it returns font names instead of font paths.
 
-
 ## Wishlist
 
-- [ ] <https://github.com/svg/svgo/issues/620>
-- [ ] <https://github.com/svg/svgo/issues/619>
-- [ ] <https://github.com/nodebox/opentype.js/issues/238>
-- [ ] <https://github.com/jergason/recursive-readdir/pull/35>
-- [ ] <https://github.com/shrhdk/text-to-svg/issues/20>
-- [ ] <https://github.com/shrhdk/text-to-svg/issues/19>
-- [ ] <https://github.com/shrhdk/text-to-svg/issues/18>
-
+-   [ ] <https://github.com/svg/svgo/issues/620>
+-   [ ] <https://github.com/svg/svgo/issues/619>
+-   [ ] <https://github.com/nodebox/opentype.js/issues/238>
+-   [ ] <https://github.com/jergason/recursive-readdir/pull/35>
+-   [ ] <https://github.com/shrhdk/text-to-svg/issues/20>
+-   [ ] <https://github.com/shrhdk/text-to-svg/issues/19>
+-   [ ] <https://github.com/shrhdk/text-to-svg/issues/18>
 
 ## Credits
 
 Thanks to the public domain font [GoudyBookletter1911][goudybookletter1911] for test purpose and our friends in [the Slack channel][slack-url] for support.
 
-
 ## License
 
 [MIT][license-url]
 
-
 [license-image]: http://img.shields.io/badge/license-MIT-blue.svg
+
 [license-url]: LICENSE
+
 [npm-image]: https://img.shields.io/npm/v/custom-fonts-in-emails.svg
+
 [npm-url]: https://npmjs.org/package/custom-fonts-in-emails
+
 [crocodile-url]: https://crocodilejs.com
+
 [standard-image]: https://img.shields.io/badge/code%20style-standard%2Bes7-brightgreen.svg
+
 [standard-url]: https://github.com/crocodilejs/eslint-config-crocodile
+
 [slack-image]: http://slack.crocodilejs.com/badge.svg
+
 [slack-url]: http://slack.crocodilejs.com
+
 [node]: https://nodejs.org
+
 [nodemailer]: https://github.com/nodemailer/nodemailer
+
 [nodemailer-base64-to-s3]: https://github.com/crocodilejs/nodemailer-base64-to-s3
+
 [dafont]: http://www.dafont.com/
+
 [font-squirrel]: https://www.fontsquirrel.com/
+
 [font-awesome-assets]: https://github.com/crocodilejs/font-awesome-assets
+
 [text-to-svg]: https://github.com/shrhdk/text-to-svg
+
 [opentype.js]: https://github.com/nodebox/opentype.js
+
 [os-fonts]: https://github.com/vutran/os-fonts
+
 [fast-levenshtein]: https://github.com/hiddentao/fast-levenshtein
+
 [goudybookletter1911]: https://github.com/theleagueof/goudy-bookletter-1911
+
 [font-awesome-assets]: https://github.com/crocodilejs/font-awesome-assets
+
 [juice]: https://github.com/Automattic/juice
+
 [build-image]: https://semaphoreci.com/api/v1/niftylettuce/custom-fonts-in-emails/branches/master/shields_badge.svg
+
 [build-url]: https://semaphoreci.com/niftylettuce/custom-fonts-in-emails
+
 [codecoverage-image]: https://codecov.io/gh/crocodilejs/custom-fonts-in-emails/branch/master/graph/badge.svg
+
 [codecoverage-url]: https://codecov.io/gh/crocodilejs/custom-fonts-in-emails
+
 [sharp]: https://github.com/lovell/sharp
+
 [trim]: http://sharp.dimens.io/en/stable/api/#trimtolerance

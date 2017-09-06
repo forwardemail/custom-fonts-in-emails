@@ -1,25 +1,17 @@
+const fs = require('fs');
+const path = require('path');
+const deasync = require('deasync');
+const $ = require('cheerio');
+const s = require('underscore.string');
+const osFonts = require('os-fonts');
+const _ = require('lodash');
+const levenshtein = require('fast-levenshtein');
+const TextToSvg = require('text-to-svg');
+const Sharp = require('sharp');
 
-import $ from 'cheerio';
-import fs from 'fs';
-import path from 'path';
-import promisify from 'es6-promisify';
-import s from 'underscore.string';
-import osFonts from 'os-fonts';
-import _ from 'lodash';
-import levenshtein from 'fast-levenshtein';
-import TextToSvg from 'text-to-svg';
-import sharp from 'sharp';
+const useTypes = ['user', 'local', 'network', 'system'];
 
-TextToSvg.load = promisify(TextToSvg.load, TextToSvg);
-
-const useTypes = [
-  'user',
-  'local',
-  'network',
-  'system'
-];
-
-const fontExtensions = [ 'otf', 'OTF', 'ttf', 'TTF', 'woff', 'WOFF' ];
+const fontExtensions = ['otf', 'OTF', 'ttf', 'TTF', 'woff', 'WOFF'];
 
 let defaults = {
   text: '',
@@ -42,13 +34,45 @@ let defaults = {
   }
 };
 
-export function setDefaults(options) {
+// <https://github.com/lovell/sharp/issues/360#issuecomment-185162998>
+Sharp.prototype.toBufferSync = function() {
+  let done = false;
+  let data;
+  this.toBuffer((err, _data_) => {
+    if (err) {
+      throw err;
+    }
+    data = _data_;
+    done = true;
+  });
+  deasync.loopWhile(() => {
+    return !done;
+  });
+  return data;
+};
+
+Sharp.prototype.metadataSync = function() {
+  let done = false;
+  let data;
+  this.metadata((err, _data_) => {
+    if (err) {
+      throw err;
+    }
+    data = _data_;
+    done = true;
+  });
+  deasync.loopWhile(() => {
+    return !done;
+  });
+  return data;
+};
+
+function setDefaults(options) {
   defaults = _.defaultsDeep(options, defaults);
   return defaults;
 }
 
-export async function setOptions(options) {
-
+function setOptions(options) {
   // clone to prevent interference
   options = _.cloneDeep(options);
 
@@ -56,8 +80,7 @@ export async function setOptions(options) {
   options = _.defaultsDeep(options, defaults);
 
   // ensure `text` is a string
-  if (!_.isString(options.text))
-    throw new Error('`text` must be a String');
+  if (!_.isString(options.text)) throw new Error('`text` must be a String');
 
   // ensure `fontNameOrPath` is a string and not blank
   if (!_.isString(options.fontNameOrPath) || s.isBlank(options.fontNameOrPath))
@@ -74,7 +97,7 @@ export async function setOptions(options) {
   // ensure it's a number greater than 0
   if (!_.isNumber(options.fontSize) || options.fontSize <= 0)
     throw new Error(
-      '`fontSize` must be a Number or String that is a valid number greater than 0'
+      '`fontSize` must be a Number or String that is a valid number > than 0'
     );
 
   // ensure `fontColor` is a string
@@ -82,7 +105,10 @@ export async function setOptions(options) {
     throw new Error('`fontColor` must be a String and not blank');
 
   // ensure `backgroundColor` is a string
-  if (!_.isString(options.backgroundColor) || s.isBlank(options.backgroundColor))
+  if (
+    !_.isString(options.backgroundColor) ||
+    s.isBlank(options.backgroundColor)
+  )
     throw new Error('`backgroundColor` must be a String and not blank');
 
   // ensure supportsFallback is a boolean else true
@@ -94,14 +120,17 @@ export async function setOptions(options) {
     throw new Error('`resizeToFontSize` must be a Boolean');
 
   // ensure trim is a boolean else true
-  if (!_.isBoolean(options.trim))
-    throw new Error('`trim` must be a Boolean');
+  if (!_.isBoolean(options.trim)) throw new Error('`trim` must be a Boolean');
 
   // ensure trimTolerance is a number else 10
-  if (!_.isNumber(options.trimTolerance)
-    || options.trimTolerance < 1
-    || options.trimTolerance > 99)
-    throw new Error('`trimTolerance` must be a Number between 1 and 99 inclusive');
+  if (
+    !_.isNumber(options.trimTolerance) ||
+    options.trimTolerance < 1 ||
+    options.trimTolerance > 99
+  )
+    throw new Error(
+      '`trimTolerance` must be a Number between 1 and 99 inclusive'
+    );
 
   // if `textToSvg.attributes.fill` is not set
   // then set it equal to `fontColor`
@@ -116,61 +145,53 @@ export async function setOptions(options) {
   // if `fontNameOrPath` was not a valid font path (with smart detection)
   // then result to use `getClosestFontName` and `getFontPathByName`
   try {
-
     const ext = path.extname(options.fontNameOrPath);
     const fontName = path.basename(options.fontNameOrPath, ext);
 
     if (_.includes(fontExtensions, ext)) {
-
-      const stats = await promisify(fs.stat, fs)(path.resolve(options.fontNameOrPath));
-
+      const stats = fs.statSync(path.resolve(options.fontNameOrPath));
       if (!stats.isFile())
-        throw new Error(`${path.resolve(options.fontNameOrPath)} was not a valid file`);
+        throw new Error(
+          `${path.resolve(options.fontNameOrPath)} was not a valid file`
+        );
 
       options.fontPath = path.resolve(options.fontNameOrPath);
       options.fontName = fontName;
-
     } else {
-
       const fontDir = path.dirname(path.resolve(options.fontNameOrPath));
 
-      let data = await Promise.all(
-        _.map(fontExtensions, ext => {
-          return new Promise(async (resolve, reject) => {
-            try {
-              const filePath = `${fontDir}/${fontName}.${ext}`;
-              const stats = await promisify(fs.stat, fs)(filePath);
-              resolve(stats.isFile() ? filePath : false);
-            } catch (err) {
-              resolve(false);
-            }
-          });
-        })
-      );
+      let data = _.map(fontExtensions, ext => {
+        const filePath = `${fontDir}/${fontName}.${ext}`;
+        try {
+          const stats = fs.statSync(filePath);
+          return stats.isFile() ? filePath : false;
+        } catch (err) {
+          return false;
+        }
+      });
 
       // remove false matches
       data = _.compact(data);
 
       // if this was a directory path then throw an error that it was not found
       if (options.fontNameOrPath.indexOf(path.sep) !== -1 && data.length === 0)
-        throw new Error(`\`fontNameOrPath\` "${options.fontNameOrPath}" file was not found`);
+        throw new Error(
+          `\`fontNameOrPath\` "${options.fontNameOrPath}" file was not found`
+        );
 
       if (data.length > 0) {
         options.fontName = fontName;
         options.fontPath = data[0];
       } else {
-        options.fontName = await getClosestFontName(options.fontNameOrPath);
-        options.fontPath = await getFontPathByName(options.fontName);
+        options.fontName = getClosestFontName(options.fontNameOrPath);
+        options.fontPath = getFontPathByName(options.fontName);
       }
-
     }
 
     return options;
-
   } catch (err) {
     throw err;
   }
-
 }
 
 function renderFallback(text, fontSize, fontColor, backgroundColor, attrs) {
@@ -192,11 +213,10 @@ function applyAttributes($el, attrs) {
   return $el;
 }
 
-export async function svg(options) {
-
+function svg(options) {
   try {
-    options = await setOptions(options);
-    const textToSvg = await TextToSvg.load(options.fontPath);
+    options = setOptions(options);
+    const textToSvg = TextToSvg.loadSync(options.fontPath);
     const str = textToSvg.getSVG(options.text, options.textToSvg);
     let $svg = $(str);
     const $rect = $('<rect>');
@@ -214,15 +234,18 @@ export async function svg(options) {
   }
 }
 
-export async function img(options) {
+function img(options) {
   try {
-    options = await setOptions(options);
-    const str = await svg(options);
+    options = setOptions(options);
+    const str = svg(options);
     const $svg = $(str);
     let $img = $('<img>');
     $img.attr('width', $svg.attr('width'));
     $img.attr('height', $svg.attr('height'));
-    $img.attr('src', `data:image/svg+xml;base64,${new Buffer(str, 'utf8').toString('base64')}`);
+    $img.attr(
+      'src',
+      `data:image/svg+xml;base64,${Buffer.from(str, 'utf8').toString('base64')}`
+    );
     if (options.supportsFallback)
       options.attrs = renderFallback(
         options.text,
@@ -238,17 +261,14 @@ export async function img(options) {
   }
 }
 
-export async function png(options, scale) {
-
+function png(options, scale) {
   // default scale it 1
   scale = scale || 1;
 
-  if (!_.isNumber(scale))
-    throw new Error('`scale` must be a Number');
+  if (!_.isNumber(scale)) throw new Error('`scale` must be a Number');
 
   try {
-
-    options = await setOptions(options);
+    options = setOptions(options);
 
     //
     // initially I tried to use the package `svgo`
@@ -261,20 +281,19 @@ export async function png(options, scale) {
     options.fontSize = Math.round(fontSize * scale);
     options.textToSvg.fontSize = options.fontSize;
 
-    const str = await svg(options);
-    const buf = new Buffer(str, 'utf8');
+    const str = svg(options);
+    const buf = Buffer.from(str, 'utf8');
 
-    const getImage = sharp(buf);
+    const getImage = new Sharp(buf);
 
-    if (options.trim)
-      getImage.trim(options.trimTolerance);
+    if (options.trim) getImage.trim(options.trimTolerance);
 
     if (options.resizeToFontSize)
       getImage.resize(null, Math.round(fontSize * scale));
 
-    const imageBuffer = await getImage.png().toBuffer();
+    const imageBuffer = getImage.png().toBufferSync();
 
-    const metadata = await sharp(imageBuffer).metadata();
+    const metadata = new Sharp(imageBuffer).metadataSync();
 
     let $img = $('<img>');
     $img.attr('width', Math.round(metadata.width / scale));
@@ -291,47 +310,51 @@ export async function png(options, scale) {
     $img = applyAttributes($img, options.attrs);
 
     return $.html($img);
-
   } catch (err) {
     throw err;
   }
 }
 
-export async function png2x(options) {
+function png2x(options) {
   try {
-    const str = await png(options, 2);
+    const str = png(options, 2);
     return str;
   } catch (err) {
     throw err;
   }
 }
 
-export async function png3x(options) {
+function png3x(options) {
   try {
-    const str = await png(options, 3);
+    const str = png(options, 3);
     return str;
   } catch (err) {
     throw err;
   }
 }
 
-export async function getClosestFontName(fontNameOrPath) {
+function getClosestFontName(fontNameOrPath) {
   try {
-    const fontNames = await getAvailableFontNames();
+    const fontNames = getAvailableFontNames();
     const fontNamesByDistance = _.sortBy(
       _.map(fontNames, name => {
         return {
           name,
-          distance: levenshtein.get(fontNameOrPath.toLowerCase(), name.toLowerCase())
+          distance: levenshtein.get(
+            fontNameOrPath.toLowerCase(),
+            name.toLowerCase()
+          )
         };
       }),
-      [ 'distance', 'name' ]
+      ['distance', 'name']
     );
     // if there were no matches or if the distance
     // of character difference is 50% different
     // than actual length of the font name, then reject it
-    if (fontNamesByDistance.length === 0
-      || fontNamesByDistance[0].distance > fontNameOrPath.length / 2)
+    if (
+      fontNamesByDistance.length === 0 ||
+      fontNamesByDistance[0].distance > fontNameOrPath.length / 2
+    )
       throw new Error(
         `"${fontNameOrPath}" was not found, did you forget to install it?`
       );
@@ -341,36 +364,33 @@ export async function getClosestFontName(fontNameOrPath) {
   }
 }
 
-export async function getFontPathByName(name) {
+function getFontPathByName(name) {
   try {
-    const fontPathsByName = await getFontPathsByName();
+    const fontPathsByName = getFontPathsByName();
     return fontPathsByName[name];
   } catch (err) {
     throw err;
   }
 }
 
-export async function getFontPathsByName() {
+function getFontPathsByName() {
   try {
-    const [ fontNames, fontPaths ] = await Promise.all([
-      getAvailableFontNames(),
-      getAvailableFontPaths()
-    ]);
+    const fontNames = getAvailableFontNames();
+    const fontPaths = getAvailableFontPaths();
     return _.zipObject(fontNames, fontPaths);
   } catch (err) {
     throw err;
   }
 }
 
-export async function getAvailableFontPaths() {
+function getAvailableFontPaths() {
   try {
-    let fonts = await Promise.all(_.map(useTypes, osFonts.getAll));
+    let fonts = _.map(useTypes, osFonts.getAllSync);
     fonts = _.flatten(fonts);
     // filter out only fonts that match our extensions
     fonts = _.filter(fonts, fontPath => {
       let ext = path.extname(fontPath);
-      if (ext.indexOf('.') === 0)
-        ext = ext.substring(1);
+      if (ext.indexOf('.') === 0) ext = ext.substring(1);
       return _.includes(fontExtensions, ext);
     });
     // sort the fonts A-Z
@@ -381,22 +401,18 @@ export async function getAvailableFontPaths() {
   }
 }
 
-export async function getAvailableFontNames() {
+function getAvailableFontNames() {
   try {
-    const fontPaths = await getAvailableFontPaths();
-    return _.map(
-      fontPaths,
-      fontPath => path.basename(
-        fontPath,
-        path.extname(fontPath)
-      )
+    const fontPaths = getAvailableFontPaths();
+    return _.map(fontPaths, fontPath =>
+      path.basename(fontPath, path.extname(fontPath))
     );
   } catch (err) {
     throw err;
   }
 }
 
-export default {
+module.exports = {
   setDefaults,
   setOptions,
   svg,

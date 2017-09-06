@@ -1,34 +1,78 @@
 {
   "name": "custom-fonts-in-emails",
-  "description":
-    "An extremely easy way to use custom fonts in emails without having to use art software. This package was built for @CrocodileJS.",
+  "description": "An extremely easy way to use custom fonts in emails without having to use art software. This package was built for @CrocodileJS.",
   "version": "0.0.4",
   "author": "Nick Baugh <niftylettuce@gmail.com>",
   "bugs": "https://github.com/crocodilejs/custom-fonts-in-emails/issues",
+  "xo": {
+    "extends": "prettier",
+    "plugins": [
+      "prettier",
+      "mocha"
+    ],
+    "parserOptions": {
+      "sourceType": "script"
+    },
+    "envs": [
+      "mocha"
+    ],
+    "rules": {
+      "prettier/prettier": [
+        "error",
+        {
+          "singleQuote": true,
+          "bracketSpacing": true,
+          "trailingComma": "none"
+        }
+      ],
+      "max-len": [
+        "error",
+        {
+          "code": 80,
+          "ignoreUrls": true
+        }
+      ],
+      "max-params": [
+        "error",
+        5
+      ],
+      "complexity": [
+        "error",
+        24
+      ],
+      "capitalized-comments": "off",
+      "camelcase": "off",
+      "no-warning-comments": "off",
+      "mocha/no-exclusive-tests": "error"
+    },
+    "space": true
+  },
   "dependencies": {
-    "babel-plugin-transform-runtime": "^6.15.0",
     "cheerio": "^1.0.0-rc.2",
-    "es6-promisify": "^5.0.0",
+    "deasync": "^0.1.10",
     "fast-levenshtein": "^2.0.5",
     "lodash": "^4.16.4",
-    "os-fonts": "^0.4.0",
+    "os-fonts": "niftylettuce/os-fonts",
     "sharp": "^0.18.2",
     "text-to-svg": "^3.0.1",
     "underscore.string": "^3.3.4"
   },
   "devDependencies": {
-    "babel-cli": "^6.11.4",
-    "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-preset-crocodile": "^1.0.0",
     "chai": "^4.1.1",
     "codecov": "^2.3.0",
     "dirty-chai": "^2.0.1",
+    "eslint": "^4.6.1",
     "eslint-config-crocodile": "^1.0.0",
+    "eslint-config-prettier": "^2.4.0",
+    "eslint-plugin-mocha": "^4.11.0",
+    "eslint-plugin-prettier": "^2.2.0",
     "istanbul": "^1.1.0-alpha.1",
-    "mocha": "^3.5.0"
+    "mocha": "^3.5.0",
+    "prettier": "^1.6.1",
+    "xo": "^0.18.2"
   },
   "engines": {
-    "node": ">= 6.x"
+    "node": ">= 8.x"
   },
   "homepage": "https://github.com/crocodilejs/custom-fonts-in-emails",
   "keywords": [
@@ -59,18 +103,10 @@
     "uri"
   ],
   "license": "MIT",
-  "main": "lib/index.js",
+  "main": "index.js",
   "repository": "crocodilejs/custom-fonts-in-emails",
   "scripts": {
-    "analyze-coverage":
-      "node_modules/.bin/babel-node node_modules/.bin/istanbul cover node_modules/.bin/_mocha",
-    "check-coverage":
-      "node_modules/.bin/babel-node node_modules/.bin/istanbul check-coverage",
-    "compile": "rm -rf lib/ && babel -d lib src",
-    "coverage":
-      "rm -rf coverage/ && npm run analyze-coverage && npm run check-coverage && node_modules/.bin/codecov",
-    "lint": "eslint .",
-    "test": "npm run lint && npm run compile && npm run coverage",
-    "watch": "babel -w -d lib src"
+    "lint": "xo",
+    "test": "npm run lint && mocha"
   }
 }
