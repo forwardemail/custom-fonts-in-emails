@@ -1,13 +1,12 @@
 const fs = require('fs');
 const path = require('path');
-const deasync = require('deasync');
 const $ = require('cheerio');
 const s = require('underscore.string');
 const osFonts = require('os-fonts');
 const _ = require('lodash');
 const levenshtein = require('fast-levenshtein');
 const TextToSvg = require('text-to-svg');
-const Sharp = require('sharp');
+const Lipo = require('lipo');
 
 const useTypes = ['user', 'local', 'network', 'system'];
 
@@ -34,44 +33,12 @@ let defaults = {
   }
 };
 
-// <https://github.com/lovell/sharp/issues/360#issuecomment-185162998>
-Sharp.prototype.toBufferSync = function() {
-  let done = false;
-  let data;
-  this.toBuffer((err, _data_) => {
-    if (err) {
-      throw err;
-    }
-    data = _data_;
-    done = true;
-  });
-  deasync.loopWhile(() => {
-    return !done;
-  });
-  return data;
-};
-
-Sharp.prototype.metadataSync = function() {
-  let done = false;
-  let data;
-  this.metadata((err, _data_) => {
-    if (err) {
-      throw err;
-    }
-    data = _data_;
-    done = true;
-  });
-  deasync.loopWhile(() => {
-    return !done;
-  });
-  return data;
-};
-
 function setDefaults(options) {
   defaults = _.defaultsDeep(options, defaults);
   return defaults;
 }
 
+// eslint-disable-next-line complexity
 function setOptions(options) {
   // clone to prevent interference
   options = _.cloneDeep(options);
@@ -276,15 +243,20 @@ function png(options, scale) {
     // but this feature isn't available yet
     // https://github.com/svg/svgo/issues/67
     //
+    // also I used Sharp directly, but then created Lipo
+    // to alleviate the need for developers to install libvips or worry
+    // about installing extra dependencies on their system
+    // but still allow them to use the brilliance of Sharp
+    //
 
-    const fontSize = options.fontSize;
+    const { fontSize } = options;
     options.fontSize = Math.round(fontSize * scale);
     options.textToSvg.fontSize = options.fontSize;
 
     const str = svg(options);
     const buf = Buffer.from(str, 'utf8');
 
-    const getImage = new Sharp(buf);
+    const getImage = new Lipo()(buf);
 
     if (options.trim) getImage.trim(options.trimTolerance);
 
@@ -293,7 +265,7 @@ function png(options, scale) {
 
     const imageBuffer = getImage.png().toBufferSync();
 
-    const metadata = new Sharp(imageBuffer).metadataSync();
+    const metadata = new Lipo()(imageBuffer).metadataSync();
 
     let $img = $('<img>');
     $img.attr('width', Math.round(metadata.width / scale));

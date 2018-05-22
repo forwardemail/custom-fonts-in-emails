@@ -5,11 +5,12 @@ const dirtyChai = require('dirty-chai');
 const _ = require('lodash');
 const $ = require('cheerio');
 
+// eslint-disable-next-line unicorn/import-index
 const customFonts = require('../../');
 
 chai.use(dirtyChai);
 
-const expect = chai.expect;
+const { expect } = chai;
 
 const text = 'Hello World';
 const fontSize = '24px';

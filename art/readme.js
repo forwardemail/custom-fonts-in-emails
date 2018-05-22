@@ -1,5 +1,7 @@
 const path = require('path');
 const _ = require('lodash');
+
+// eslint-disable-next-line unicorn/import-index
 const customFonts = require('../');
 
 const options = {
