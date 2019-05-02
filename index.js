@@ -132,7 +132,7 @@ function setOptions(options) {
         try {
           const stats = fs.statSync(filePath);
           return stats.isFile() ? filePath : false;
-        } catch (err) {
+        } catch (error) {
           return false;
         }
       });
@@ -156,8 +156,8 @@ function setOptions(options) {
     }
 
     return options;
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -196,8 +196,8 @@ function svg(options) {
     $svg.attr('viewBox', `0 0 ${$svg.attr('width')} ${$svg.attr('height')}`);
     $svg = applyAttributes($svg, options.attrs);
     return $.html($svg);
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -223,8 +223,8 @@ function img(options) {
       );
     $img = applyAttributes($img, options.attrs);
     return $.html($img);
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -282,8 +282,8 @@ function png(options, scale) {
     $img = applyAttributes($img, options.attrs);
 
     return $.html($img);
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -291,8 +291,8 @@ function png2x(options) {
   try {
     const str = png(options, 2);
     return str;
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -300,8 +300,8 @@ function png3x(options) {
   try {
     const str = png(options, 3);
     return str;
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -331,8 +331,8 @@ function getClosestFontName(fontNameOrPath) {
         `"${fontNameOrPath}" was not found, did you forget to install it?`
       );
     return fontNamesByDistance[0].name;
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -340,8 +340,8 @@ function getFontPathByName(name) {
   try {
     const fontPathsByName = getFontPathsByName();
     return fontPathsByName[name];
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -350,8 +350,8 @@ function getFontPathsByName() {
     const fontNames = getAvailableFontNames();
     const fontPaths = getAvailableFontPaths();
     return _.zipObject(fontNames, fontPaths);
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -368,8 +368,8 @@ function getAvailableFontPaths() {
     // sort the fonts A-Z
     fonts = fonts.sort();
     return fonts;
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -379,8 +379,8 @@ function getAvailableFontNames() {
     return _.map(fontPaths, fontPath =>
       path.basename(fontPath, path.extname(fontPath))
     );
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    throw error;
   }
 }
 
