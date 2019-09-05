@@ -31,8 +31,8 @@ describe('custom-fonts-in-emails', () => {
         customFonts.setOptions({
           trimTolerance: val
         });
-      } catch (error) {
-        e = error;
+      } catch (err) {
+        e = err;
       } finally {
         expect(e).to.be.an('error');
       }
@@ -46,8 +46,8 @@ describe('custom-fonts-in-emails', () => {
         const opts = {};
         opts[opt] = '';
         customFonts.setOptions(opts);
-      } catch (error) {
-        e = error;
+      } catch (err) {
+        e = err;
       } finally {
         expect(e).to.be.an('error');
       }
@@ -110,8 +110,8 @@ describe('custom-fonts-in-emails', () => {
           'GoudyBookletter1912'
         )
       });
-    } catch (error) {
-      e = error;
+    } catch (err) {
+      e = err;
     } finally {
       expect(e).to.be.an('error');
     }
@@ -191,8 +191,8 @@ describe('custom-fonts-in-emails', () => {
     let e;
     try {
       customFonts.png({ text }, 'foo');
-    } catch (error) {
-      e = error;
+    } catch (err) {
+      e = err;
     } finally {
       expect(e).to.be.an('error');
       expect(e.message).to.equal('`scale` must be a Number');
@@ -221,8 +221,8 @@ describe('custom-fonts-in-emails', () => {
     let e;
     try {
       customFonts.getClosestFontName('Foo Bar Baz Beep');
-    } catch (error) {
-      e = error;
+    } catch (err) {
+      e = err;
     } finally {
       expect(e).to.be.an('error');
     }

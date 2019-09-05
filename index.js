@@ -1,12 +1,13 @@
 const fs = require('fs');
 const path = require('path');
+
 const $ = require('cheerio');
-const s = require('underscore.string');
-const osFonts = require('os-fonts');
-const _ = require('lodash');
-const levenshtein = require('fast-levenshtein');
-const TextToSvg = require('text-to-svg');
 const Lipo = require('lipo');
+const TextToSvg = require('text-to-svg');
+const _ = require('lodash');
+const isSANB = require('is-string-and-not-blank');
+const levenshtein = require('fast-levenshtein');
+const osFonts = require('os-fonts');
 
 const useTypes = ['user', 'local', 'network', 'system'];
 
@@ -40,56 +41,53 @@ function setDefaults(options) {
 
 // eslint-disable-next-line complexity
 function setOptions(options) {
-  // clone to prevent interference
+  // Clone to prevent interference
   options = _.cloneDeep(options);
 
-  // set deep defaults
+  // Set deep defaults
   options = _.defaultsDeep(options, defaults);
 
-  // ensure `text` is a string
+  // Ensure `text` is a string
   if (!_.isString(options.text)) throw new Error('`text` must be a String');
 
-  // ensure `fontNameOrPath` is a string and not blank
-  if (!_.isString(options.fontNameOrPath) || s.isBlank(options.fontNameOrPath))
+  // Ensure `fontNameOrPath` is a string and not blank
+  if (!isSANB(options.fontNameOrPath))
     throw new Error('`fontNameOrPath` must be a String and not blank');
 
-  // convert font size in pixels to number
+  // Convert font size in pixels to number
   // and remove px, so we just convert to digits only
   if (_.isString(options.fontSize))
     options.fontSize = parseFloat(options.fontSize);
 
-  // round to nearest whole pixel
+  // Round to nearest whole pixel
   options.fontSize = Math.round(options.fontSize);
 
-  // ensure it's a number greater than 0
+  // Ensure it's a number greater than 0
   if (!_.isNumber(options.fontSize) || options.fontSize <= 0)
     throw new Error(
       '`fontSize` must be a Number or String that is a valid number > than 0'
     );
 
-  // ensure `fontColor` is a string
-  if (!_.isString(options.fontColor) || s.isBlank(options.fontColor))
+  // Ensure `fontColor` is a string
+  if (!isSANB(options.fontColor))
     throw new Error('`fontColor` must be a String and not blank');
 
-  // ensure `backgroundColor` is a string
-  if (
-    !_.isString(options.backgroundColor) ||
-    s.isBlank(options.backgroundColor)
-  )
+  // Ensure `backgroundColor` is a string
+  if (!isSANB(options.backgroundColor))
     throw new Error('`backgroundColor` must be a String and not blank');
 
-  // ensure supportsFallback is a boolean else true
+  // Ensure supportsFallback is a boolean else true
   if (!_.isBoolean(options.supportsFallback))
     throw new Error('`supportsFallback` must be a Boolean');
 
-  // ensure resizeToFontSize is a boolean else true
+  // Ensure resizeToFontSize is a boolean else true
   if (!_.isBoolean(options.resizeToFontSize))
     throw new Error('`resizeToFontSize` must be a Boolean');
 
-  // ensure trim is a boolean else true
+  // Ensure trim is a boolean else true
   if (!_.isBoolean(options.trim)) throw new Error('`trim` must be a Boolean');
 
-  // ensure trimTolerance is a number else 10
+  // Ensure trimTolerance is a number else 10
   if (
     !_.isNumber(options.trimTolerance) ||
     options.trimTolerance < 1 ||
@@ -99,17 +97,17 @@ function setOptions(options) {
       '`trimTolerance` must be a Number between 1 and 99 inclusive'
     );
 
-  // if `textToSvg.attributes.fill` is not set
+  // If `textToSvg.attributes.fill` is not set
   // then set it equal to `fontColor`
   if (!_.isString(options.textToSvg.attributes.fill))
     options.textToSvg.attributes.fill = options.fontColor;
 
-  // if `textToSvg.fontSize` not set, then we will calculate
+  // If `textToSvg.fontSize` not set, then we will calculate
   // what the `fontSize` should be based off height of font
   if (!_.isNumber(options.textToSvg.fontSize))
     options.textToSvg.fontSize = options.fontSize;
 
-  // if `fontNameOrPath` was not a valid font path (with smart detection)
+  // If `fontNameOrPath` was not a valid font path (with smart detection)
   // then result to use `getClosestFontName` and `getFontPathByName`
   try {
     const ext = path.extname(options.fontNameOrPath);
@@ -132,15 +130,15 @@ function setOptions(options) {
         try {
           const stats = fs.statSync(filePath);
           return stats.isFile() ? filePath : false;
-        } catch (error) {
+        } catch (err) {
           return false;
         }
       });
 
-      // remove false matches
+      // Remove false matches
       data = _.compact(data);
 
-      // if this was a directory path then throw an error that it was not found
+      // If this was a directory path then throw an error that it was not found
       if (options.fontNameOrPath.indexOf(path.sep) !== -1 && data.length === 0)
         throw new Error(
           `\`fontNameOrPath\` "${options.fontNameOrPath}" file was not found`
@@ -156,11 +154,12 @@ function setOptions(options) {
     }
 
     return options;
-  } catch (error) {
-    throw error;
+  } catch (err) {
+    throw err;
   }
 }
 
+// eslint-disable-next-line max-params
 function renderFallback(text, fontSize, fontColor, backgroundColor, attrs) {
   attrs.title = text;
   attrs.alt = text;
@@ -196,8 +195,8 @@ function svg(options) {
     $svg.attr('viewBox', `0 0 ${$svg.attr('width')} ${$svg.attr('height')}`);
     $svg = applyAttributes($svg, options.attrs);
     return $.html($svg);
-  } catch (error) {
-    throw error;
+  } catch (err) {
+    throw err;
   }
 }
 
@@ -223,13 +222,13 @@ function img(options) {
       );
     $img = applyAttributes($img, options.attrs);
     return $.html($img);
-  } catch (error) {
-    throw error;
+  } catch (err) {
+    throw err;
   }
 }
 
 function png(options, scale) {
-  // default scale it 1
+  // Default scale it 1
   scale = scale || 1;
 
   if (!_.isNumber(scale)) throw new Error('`scale` must be a Number');
@@ -282,8 +281,8 @@ function png(options, scale) {
     $img = applyAttributes($img, options.attrs);
 
     return $.html($img);
-  } catch (error) {
-    throw error;
+  } catch (err) {
+    throw err;
   }
 }
 
@@ -291,8 +290,8 @@ function png2x(options) {
   try {
     const str = png(options, 2);
     return str;
-  } catch (error) {
-    throw error;
+  } catch (err) {
+    throw err;
   }
 }
 
@@ -300,8 +299,8 @@ function png3x(options) {
   try {
     const str = png(options, 3);
     return str;
-  } catch (error) {
-    throw error;
+  } catch (err) {
+    throw err;
   }
 }
 
@@ -320,7 +319,7 @@ function getClosestFontName(fontNameOrPath) {
       }),
       ['distance', 'name']
     );
-    // if there were no matches or if the distance
+    // If there were no matches or if the distance
     // of character difference is 50% different
     // than actual length of the font name, then reject it
     if (
@@ -331,8 +330,8 @@ function getClosestFontName(fontNameOrPath) {
         `"${fontNameOrPath}" was not found, did you forget to install it?`
       );
     return fontNamesByDistance[0].name;
-  } catch (error) {
-    throw error;
+  } catch (err) {
+    throw err;
   }
 }
 
@@ -340,8 +339,8 @@ function getFontPathByName(name) {
   try {
     const fontPathsByName = getFontPathsByName();
     return fontPathsByName[name];
-  } catch (error) {
-    throw error;
+  } catch (err) {
+    throw err;
   }
 }
 
@@ -350,8 +349,8 @@ function getFontPathsByName() {
     const fontNames = getAvailableFontNames();
     const fontPaths = getAvailableFontPaths();
     return _.zipObject(fontNames, fontPaths);
-  } catch (error) {
-    throw error;
+  } catch (err) {
+    throw err;
   }
 }
 
@@ -359,17 +358,17 @@ function getAvailableFontPaths() {
   try {
     let fonts = _.map(useTypes, osFonts.getAllSync);
     fonts = _.flatten(fonts);
-    // filter out only fonts that match our extensions
+    // Filter out only fonts that match our extensions
     fonts = _.filter(fonts, fontPath => {
       let ext = path.extname(fontPath);
       if (ext.indexOf('.') === 0) ext = ext.substring(1);
       return _.includes(fontExtensions, ext);
     });
-    // sort the fonts A-Z
+    // Sort the fonts A-Z
     fonts = fonts.sort();
     return fonts;
-  } catch (error) {
-    throw error;
+  } catch (err) {
+    throw err;
   }
 }
 
@@ -379,8 +378,8 @@ function getAvailableFontNames() {
     return _.map(fontPaths, fontPath =>
       path.basename(fontPath, path.extname(fontPath))
     );
-  } catch (error) {
-    throw error;
+  } catch (err) {
+    throw err;
   }
 }
 

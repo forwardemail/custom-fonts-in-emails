@@ -1,79 +1,55 @@
 {
   "name": "custom-fonts-in-emails",
-  "description": "An extremely easy way to use custom fonts in emails without having to use art software. This package was built for @CrocodileJS.",
+  "description": "An extremely easy way to use custom fonts in emails without having to use art software. Made for Lad.",
   "version": "2.0.1",
   "author": "Nick Baugh <niftylettuce@gmail.com>",
-  "bugs": "https://github.com/crocodilejs/custom-fonts-in-emails/issues",
-  "xo": {
-    "extends": "prettier",
-    "plugins": [
-      "prettier",
-      "mocha"
-    ],
-    "parserOptions": {
-      "sourceType": "script"
-    },
-    "envs": [
-      "mocha"
-    ],
-    "rules": {
-      "prettier/prettier": [
-        "error",
-        {
-          "singleQuote": true,
-          "bracketSpacing": true,
-          "trailingComma": "none"
-        }
-      ],
-      "max-len": [
-        "error",
-        {
-          "code": 80,
-          "ignoreUrls": true
-        }
-      ],
-      "max-params": [
-        "error",
-        5
-      ],
-      "complexity": [
-        "error",
-        24
-      ],
-      "capitalized-comments": "off",
-      "camelcase": "off",
-      "no-warning-comments": "off",
-      "mocha/no-exclusive-tests": "error"
-    },
-    "space": true
+  "bugs": "https://github.com/ladjs/custom-fonts-in-emails/issues",
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
+  "contributors": [
+    "Nick Baugh <niftylettuce@gmail.com>"
+  ],
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "fast-levenshtein": "^2.0.6",
+    "is-string-and-not-blank": "^0.0.2",
     "lipo": "^0.0.10",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "os-fonts": "^0.5.0",
-    "text-to-svg": "^3.1.5",
-    "underscore.string": "^3.3.5"
+    "text-to-svg": "^3.1.5"
   },
   "devDependencies": {
+    "@commitlint/cli": "^8.1.0",
+    "@commitlint/config-conventional": "^8.1.0",
     "chai": "^4.2.0",
-    "codecov": "^3.3.0",
+    "codecov": "^3.5.0",
     "dirty-chai": "^2.0.1",
-    "eslint": "^5.16.0",
-    "eslint-config-crocodile": "^1.0.0",
-    "eslint-config-prettier": "^4.2.0",
-    "eslint-plugin-mocha": "^5.3.0",
-    "eslint-plugin-prettier": "^3.0.1",
+    "eslint": "^6.3.0",
+    "eslint-config-xo-lass": "^1.0.3",
+    "eslint-plugin-mocha": "^6.1.0",
+    "fixpack": "^2.3.1",
+    "husky": "^3.0.5",
     "istanbul": "^1.1.0-alpha.1",
-    "mocha": "^6.1.4",
-    "prettier": "^1.17.0",
+    "lint-staged": "^9.2.5",
+    "mocha": "^6.2.0",
+    "prettier": "^1.18.2",
+    "remark-cli": "^7.0.0",
+    "remark-preset-github": "^0.0.16",
     "xo": "^0.24.0"
   },
   "engines": {
     "node": ">= 8.x"
   },
-  "homepage": "https://github.com/crocodilejs/custom-fonts-in-emails",
+  "homepage": "https://github.com/ladjs/custom-fonts-in-emails",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && npm test",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
   "keywords": [
     "awesome",
     "base64",
@@ -102,10 +78,50 @@
     "uri"
   ],
   "license": "MIT",
+  "lint-staged": {
+    "*.js": [
+      "xo --fix",
+      "git add"
+    ],
+    "*.md": [
+      "remark . -qfo",
+      "git add"
+    ],
+    "package.json": [
+      "fixpack",
+      "git add"
+    ]
+  },
   "main": "index.js",
-  "repository": "crocodilejs/custom-fonts-in-emails",
+  "prettier": {
+    "singleQuote": true,
+    "bracketSpacing": true,
+    "trailingComma": "none"
+  },
+  "remarkConfig": {
+    "plugins": [
+      "preset-github"
+    ]
+  },
+  "repository": "ladjs/custom-fonts-in-emails",
   "scripts": {
-    "lint": "xo",
+    "lint": "xo && remark . -qfo",
     "test": "npm run lint && mocha"
+  },
+  "xo": {
+    "plugins": [
+      "mocha"
+    ],
+    "extends": [
+      "xo-lass"
+    ],
+    "envs": [
+      "mocha"
+    ],
+    "rules": {
+      "mocha/no-exclusive-tests": "error"
+    },
+    "prettier": true,
+    "space": true
   }
 }
