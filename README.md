@@ -10,7 +10,7 @@
 
 * :art: Outputs optimized SVG, PNG, and Base64 inlined images with optional support for [**@2x**](https://github.com/2x) and [**@3x**](https://github.com/3x) Retina versions (uses the incredibly fast and performant [sharp][sharp]).
 * :bulb: Automatic smart-detection of font names spelled incorrectly (or with the wrong extension) with 50% accuracy (uses [fast-levenshtein][fast-levenshtein] and checks for at least 50% distance match).
-* :crystal_ball: Detects user, local, network, and system fonts using [os-fonts][os-fonts] (e.g. you don't need to write `Arial.ttf`, you can just write `Arial`).
+* :crystal_ball: Detects user, local, network, system fonts, and `node_modules` folder fonts using [os-fonts][os-fonts] and [pkg-up][pkg-up] (e.g. you don't need to write `Arial.ttf`, you can just write `Arial`).
 * :tada: Supports all WOFF, OTF, and TTF fonts (both with TrueType `glyf` and PostScript `cff` outlines).
 * :sparkles: Use with recommended packages [nodemailer][nodemailer] and [nodemailer-base64-to-s3][nodemailer-base64-to-s3], or simply use [Lad][lad-url] (has this built-in).
 * :pear: Pairs great with [font-awesome-assets][font-awesome-assets] and [juice][juice] (see [Lad's][lad-url] usage as an example).
@@ -77,7 +77,7 @@ customFonts.png2x(options)
 
 You can now use any font in your emails – without having to use art software like Photoshop or Sketch!
 
-It supports system-wide fonts out of the box, but you can pass a file path if you wish to use a custom non-standard font.  You can also customize its kerning, anchor, color/fill, stroke, font size (even in points if needed), add custom attributes to the HTML tag, and more!  See [Usage](#usage), [Options](#options), and the [API](#api) reference below for more info.
+It supports system-wide and `node_modules` fonts out of the box, but you can pass a file path if you wish to use a custom non-standard font.  You can also customize its kerning, anchor, color/fill, stroke, font size (even in points if needed), add custom attributes to the HTML tag, and more!  See [Usage](#usage), [Options](#options), and the [API](#api) reference below for more info.
 
 It even uses the [fast-levenshtein][fast-levenshtein] algorithm to detect the closest match to the spelling of a font (e.g. in case you mispellled `Arial` as `Arail`).
 
@@ -141,7 +141,7 @@ The `options` argument in all [API](#api) methods is an Object that accepts the 
 | Property           |       Type       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------ | :--------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `text`             |      String      | Text to write using the font family specified in `fontNameOrPath` (defaults to an empty String of `''`)                                                                                                                                                                                                                                                                                                                                               |
-| `fontNameOrPath`   |      String      | Name or file path of the font (defaults to `Arial` – note that by default we load user, local, network, and system fonts across any operating system using [os-fonts][os-fonts], so you can use any font installed!)                                                                                                                                                                                                                                  |
+| `fontNameOrPath`   |      String      | Name or file path of the font (defaults to `Arial` – note that by default we load user, local, network, system, and `node_modules` fonts across any operating system using [os-fonts][os-fonts], so you can use any font installed!)                                                                                                                                                                                                                  |
 | `fontSize`         | Number or String | Size of font **in pixels**, which is rounded to nearest whole Integer (this automatically sets `options.textToSvg.fontSize` – defaults to `24px`, but you don't need to specify the affix `px` as it is automatically stripped and converted to the nearest whole Integer using `Math.round(parseInt(val, 10))` – this value must be greater than 0)                                                                                                  |
 | `fontColor`        |      String      | Valid hex color or rgba value to render the text fill color with with (defaults to `#000`)                                                                                                                                                                                                                                                                                                                                                            |
 | `backgroundColor`  |      String      | Valid hex color or rgba value to render the background color with (defaults to `transparent`)                                                                                                                                                                                                                                                                                                                                                         |
@@ -203,7 +203,7 @@ Same as `customFonts.png`, except it returns an image with three as many pixels 
 
 ### `customFonts.getAvailableFontPaths()`
 
-A function that returns an Array of file paths for all of the user, local, network, and system fonts available on the current operating system.
+A function that returns an Array of file paths for all of the user, local, network, system, and `node_modules` fonts available on the current operating system.
 
 ### `customFonts.getAvailableFontNames()`
 
@@ -280,3 +280,5 @@ Thanks to the public domain font [GoudyBookletter1911][goudybookletter1911] for 
 [sharp]: https://github.com/lovell/sharp
 
 [trim]: http://sharp.dimens.io/en/stable/api/#trimtolerance
+
+[pkg-up]: https://github.com/sindresorhus/pkg-up

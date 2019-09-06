@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
+const pkgDir = require('pkg-dir');
 const $ = require('cheerio');
 const Lipo = require('lipo');
 const TextToSvg = require('text-to-svg');
@@ -358,15 +359,26 @@ function getAvailableFontPaths() {
   try {
     let fonts = _.map(useTypes, osFonts.getAllSync);
     fonts = _.flatten(fonts);
-    // Filter out only fonts that match our extensions
-    fonts = _.filter(fonts, fontPath => {
-      let ext = path.extname(fontPath);
+    const arr = [];
+    // add fonts from system
+    for (let i = 0; i < fonts.length; i++) {
+      let ext = path.extname(fonts[i]);
       if (ext.indexOf('.') === 0) ext = ext.substring(1);
-      return _.includes(fontExtensions, ext);
-    });
+      if (fontExtensions.includes(ext)) arr.push(fonts[i]);
+    }
+
+    // add node_modules folder
+    const nodeModuleFonts = osFonts.getFontsInDirectorySync(
+      path.join(pkgDir.sync(__dirname), 'node_modules')
+    );
+    for (let i = 0; i < nodeModuleFonts.length; i++) {
+      let ext = path.extname(nodeModuleFonts[i]);
+      if (ext.indexOf('.') === 0) ext = ext.substring(1);
+      if (fontExtensions.includes(ext)) arr.push(nodeModuleFonts[i]);
+    }
+
     // Sort the fonts A-Z
-    fonts = fonts.sort();
-    return fonts;
+    return arr.sort();
   } catch (err) {
     throw err;
   }
