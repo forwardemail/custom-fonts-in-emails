@@ -243,9 +243,9 @@ Thanks to the public domain font [GoudyBookletter1911][goudybookletter1911] for 
 
 [lad-url]: https://lad.js.org
 
-[slack-image]: http://slack.crocodilejs.com/badge.svg
+[slack-image]: https://slack.crocodilejs.com/badge.svg
 
-[slack-url]: http://slack.crocodilejs.com
+[slack-url]: https://slack.crocodilejs.com
 
 [nodemailer]: https://github.com/nodemailer/nodemailer
 
