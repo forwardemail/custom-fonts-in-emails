@@ -258,4 +258,61 @@ describe('custom-fonts-in-emails', () => {
     const fontPath = customFonts.getFontPathByName('Arial');
     expect(fontPath).to.be.a('string');
   });
+
+  it('should get file in node_modules folder if used wrong extension', () => {
+    const options = customFonts.setOptions({
+      fontNameOrPath: 'Bitter Bold'
+    });
+    expect(options.fontName).to.equal('Bitter-Bold');
+    expect(options.fontPath).to.equal(
+      path.join(
+        __dirname,
+        '..',
+        '..',
+        'node_modules',
+        'bitter-font',
+        'fonts',
+        'Bold',
+        'Bitter-Bold.woff'
+      )
+    );
+  });
+
+  it('should get file in node_modules folder with correct extension', () => {
+    const options = customFonts.setOptions({
+      fontNameOrPath: 'Bitter-Bold.ttf'
+    });
+    expect(options.fontName).to.equal('Bitter-Bold');
+    expect(options.fontPath).to.equal(
+      path.join(
+        __dirname,
+        '..',
+        '..',
+        'node_modules',
+        'bitter-font',
+        'fonts',
+        'Bold',
+        'Bitter-Bold.woff'
+      )
+    );
+  });
+
+  it('should get file in node_modules folder without an extension', () => {
+    const options = customFonts.setOptions({
+      fontNameOrPath: 'Bitter-Bold'
+    });
+    expect(options.fontName).to.equal('Bitter-Bold');
+    expect(options.fontPath).to.equal(
+      path.join(
+        __dirname,
+        '..',
+        '..',
+        'node_modules',
+        'bitter-font',
+        'fonts',
+        'Bold',
+        'Bitter-Bold.woff'
+      )
+    );
+  });
 });

@@ -629,6 +629,11 @@ bindings@~1.2.1:
   resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.2.1.tgz#14ad6113812d2d37d72e67b4cacb4bb726505f11"
   integrity sha1-FK1hE4EtLTfXLme0ystLtyZQXxE=
 
+bitter-font@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/bitter-font/-/bitter-font-0.0.1.tgz#adc610426a491225c2685a41014f46794d90ded5"
+  integrity sha512-wM5xK71XlD4yNeWK0zt2bcUWIUyDjNY6f3NP7DjAKgrC0jIYprX7mJkSu0O89k9mQq/NZs1fkb+uVf9wS+IcaA==
+
 boolbase@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"

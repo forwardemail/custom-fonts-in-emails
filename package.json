@@ -25,6 +25,7 @@
   "devDependencies": {
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^8.1.0",
+    "bitter-font": "^0.0.1",
     "chai": "^4.2.0",
     "codecov": "^3.5.0",
     "dirty-chai": "^2.0.1",

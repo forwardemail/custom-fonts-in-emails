@@ -1,10 +1,11 @@
 # custom-fonts-in-emails
 
-[![Slack Status][slack-image]][slack-url]
-[![NPM version][npm-image]][npm-url]
-[![Build Status][build-image]][build-url]
-[![Code Coverage][codecoverage-image]][codecoverage-url]
-[![MIT License][license-image]][license-url]
+[![build status](https://img.shields.io/travis/ladjs/custom-fonts-in-emails.svg)](https://travis-ci.org/ladjs/custom-fonts-in-emails)
+[![code coverage](https://img.shields.io/codecov/c/github/ladjs/custom-fonts-in-emails.svg)](https://codecov.io/gh/ladjs/custom-fonts-in-emails)
+[![code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
+[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![made with lass](https://img.shields.io/badge/made_with-lass-95CC28.svg)](https://lass.js.org)
+[![license](https://img.shields.io/github/license/ladjs/custom-fonts-in-emails.svg)](LICENSE)
 
 **An extremely easy way to use custom fonts in emails without having to use art software.**
 
@@ -233,17 +234,7 @@ Thanks to the public domain font [GoudyBookletter1911][goudybookletter1911] for 
 
 ## 
 
-[license-image]: http://img.shields.io/badge/license-MIT-blue.svg
-
-[license-url]: LICENSE
-
-[npm-image]: https://img.shields.io/npm/v/custom-fonts-in-emails.svg
-
-[npm-url]: https://npmjs.org/package/custom-fonts-in-emails
-
 [lad-url]: https://lad.js.org
-
-[slack-image]: https://slack.crocodilejs.com/badge.svg
 
 [slack-url]: https://slack.crocodilejs.com
 
@@ -268,14 +259,6 @@ Thanks to the public domain font [GoudyBookletter1911][goudybookletter1911] for 
 [goudybookletter1911]: https://github.com/theleagueof/goudy-bookletter-1911
 
 [juice]: https://github.com/Automattic/juice
-
-[build-image]: https://semaphoreci.com/api/v1/niftylettuce/custom-fonts-in-emails/branches/master/shields_badge.svg
-
-[build-url]: https://semaphoreci.com/niftylettuce/custom-fonts-in-emails
-
-[codecoverage-image]: https://codecov.io/gh/ladjs/custom-fonts-in-emails/branch/master/graph/badge.svg
-
-[codecoverage-url]: https://codecov.io/gh/ladjs/custom-fonts-in-emails
 
 [sharp]: https://github.com/lovell/sharp
 
