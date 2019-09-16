@@ -369,7 +369,7 @@ function getAvailableFontPaths() {
 
     // add node_modules folder
     const nodeModuleFonts = osFonts.getFontsInDirectorySync(
-      path.join(pkgDir.sync(__dirname), 'node_modules')
+      path.join(pkgDir.sync(), 'node_modules')
     );
     for (let i = 0; i < nodeModuleFonts.length; i++) {
       let ext = path.extname(nodeModuleFonts[i]);
