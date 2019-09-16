@@ -1,9 +1,12 @@
 const fs = require('fs');
 const path = require('path');
+
+const $ = require('cheerio');
+const _ = require('lodash');
 const chai = require('chai');
 const dirtyChai = require('dirty-chai');
-const _ = require('lodash');
-const $ = require('cheerio');
+const revisionHash = require('rev-hash');
+const safeStringify = require('fast-safe-stringify');
 
 // eslint-disable-next-line unicorn/import-index
 const customFonts = require('../../');
@@ -314,5 +317,17 @@ describe('custom-fonts-in-emails', () => {
         'Bitter-Bold.woff'
       )
     );
+  });
+
+  it('should store to cache', () => {
+    const options = customFonts.setOptions({
+      text,
+      attrs: {
+        baz: 'boop'
+      }
+    });
+    const svg = customFonts.svg(options);
+    const hash = revisionHash(`svg:${safeStringify(options)}`);
+    expect(customFonts.cache[hash], svg);
   });
 });

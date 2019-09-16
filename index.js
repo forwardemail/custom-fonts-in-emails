@@ -1,18 +1,23 @@
 const fs = require('fs');
 const path = require('path');
 
-const pkgDir = require('pkg-dir');
 const $ = require('cheerio');
 const Lipo = require('lipo');
 const TextToSvg = require('text-to-svg');
 const _ = require('lodash');
+const debug = require('debug')('custom-fonts-in-emails');
 const isSANB = require('is-string-and-not-blank');
 const levenshtein = require('fast-levenshtein');
 const osFonts = require('os-fonts');
+const pkgDir = require('pkg-dir');
+const revisionHash = require('rev-hash');
+const safeStringify = require('fast-safe-stringify');
 
 const useTypes = ['user', 'local', 'network', 'system'];
 
 const fontExtensions = ['otf', 'OTF', 'ttf', 'TTF', 'woff', 'WOFF'];
+
+const cache = {};
 
 let defaults = {
   text: '',
@@ -183,6 +188,13 @@ function applyAttributes($el, attrs) {
 function svg(options) {
   try {
     options = setOptions(options);
+    const hash = revisionHash(`svg:${safeStringify(options)}`);
+
+    if (cache[hash]) {
+      debug(`found cache result for ${hash}`);
+      return cache[hash];
+    }
+
     const textToSvg = TextToSvg.loadSync(options.fontPath);
     const str = textToSvg.getSVG(options.text, options.textToSvg);
     let $svg = $(str);
@@ -195,7 +207,10 @@ function svg(options) {
     $svg.attr('height', Math.round(parseFloat($svg.attr('height'))));
     $svg.attr('viewBox', `0 0 ${$svg.attr('width')} ${$svg.attr('height')}`);
     $svg = applyAttributes($svg, options.attrs);
-    return $.html($svg);
+    const result = $.html($svg);
+    cache[hash] = result;
+    debug(`caching result for ${hash}`);
+    return result;
   } catch (err) {
     throw err;
   }
@@ -204,6 +219,13 @@ function svg(options) {
 function img(options) {
   try {
     options = setOptions(options);
+    const hash = revisionHash(`img:${safeStringify(options)}`);
+
+    if (cache[hash]) {
+      debug(`found cache result for ${hash}`);
+      return cache[hash];
+    }
+
     const str = svg(options);
     const $svg = $(str);
     let $img = $('<img>');
@@ -222,7 +244,10 @@ function img(options) {
         options.attrs
       );
     $img = applyAttributes($img, options.attrs);
-    return $.html($img);
+    const result = $.html($img);
+    cache[hash] = result;
+    debug(`caching result for ${hash}`);
+    return result;
   } catch (err) {
     throw err;
   }
@@ -253,6 +278,13 @@ function png(options, scale) {
     options.fontSize = Math.round(fontSize * scale);
     options.textToSvg.fontSize = options.fontSize;
 
+    const hash = revisionHash(`png:${safeStringify(options)}`);
+
+    if (cache[hash]) {
+      debug(`found cache result for ${hash}`);
+      return cache[hash];
+    }
+
     const str = svg(options);
     const buf = Buffer.from(str, 'utf8');
 
@@ -280,8 +312,10 @@ function png(options, scale) {
         options.attrs
       );
     $img = applyAttributes($img, options.attrs);
-
-    return $.html($img);
+    const result = $.html($img);
+    cache[hash] = result;
+    debug(`caching result for ${hash}`);
+    return result;
   } catch (err) {
     throw err;
   }
@@ -307,6 +341,8 @@ function png3x(options) {
 
 function getClosestFontName(fontNameOrPath) {
   try {
+    const hash = `closestFontName(${fontNameOrPath})`;
+    if (cache[hash]) return cache[hash];
     const fontNames = getAvailableFontNames();
     const fontNamesByDistance = _.sortBy(
       _.map(fontNames, name => {
@@ -330,6 +366,7 @@ function getClosestFontName(fontNameOrPath) {
       throw new Error(
         `"${fontNameOrPath}" was not found, did you forget to install it?`
       );
+    cache[hash] = fontNamesByDistance[0].name;
     return fontNamesByDistance[0].name;
   } catch (err) {
     throw err;
@@ -338,7 +375,10 @@ function getClosestFontName(fontNameOrPath) {
 
 function getFontPathByName(name) {
   try {
+    const hash = `fontPathByName(${name})`;
+    if (cache[hash]) return cache[hash];
     const fontPathsByName = getFontPathsByName();
+    cache[hash] = fontPathsByName[name];
     return fontPathsByName[name];
   } catch (err) {
     throw err;
@@ -347,9 +387,12 @@ function getFontPathByName(name) {
 
 function getFontPathsByName() {
   try {
+    if (cache.fontPathsByName) return cache.fontPathsByName;
     const fontNames = getAvailableFontNames();
     const fontPaths = getAvailableFontPaths();
-    return _.zipObject(fontNames, fontPaths);
+    const fontPathsByName = _.zipObject(fontNames, fontPaths);
+    cache.fontPathsByName = fontPathsByName;
+    return fontPathsByName;
   } catch (err) {
     throw err;
   }
@@ -357,6 +400,7 @@ function getFontPathsByName() {
 
 function getAvailableFontPaths() {
   try {
+    if (cache.fontPaths) return cache.fontPaths;
     let fonts = _.map(useTypes, osFonts.getAllSync);
     fonts = _.flatten(fonts);
     const arr = [];
@@ -378,7 +422,9 @@ function getAvailableFontPaths() {
     }
 
     // Sort the fonts A-Z
-    return arr.sort();
+    const fontPaths = arr.sort();
+    cache.fontPaths = fontPaths;
+    return fontPaths;
   } catch (err) {
     throw err;
   }
@@ -386,10 +432,13 @@ function getAvailableFontPaths() {
 
 function getAvailableFontNames() {
   try {
+    if (cache.fontNames) return cache.fontNames;
     const fontPaths = getAvailableFontPaths();
-    return _.map(fontPaths, fontPath =>
+    const fontNames = _.map(fontPaths, fontPath =>
       path.basename(fontPath, path.extname(fontPath))
     );
+    cache.fontNames = fontNames;
+    return fontNames;
   } catch (err) {
     throw err;
   }
@@ -407,5 +456,6 @@ module.exports = {
   getFontPathsByName,
   getFontPathByName,
   getAvailableFontPaths,
-  getAvailableFontNames
+  getAvailableFontNames,
+  cache
 };
