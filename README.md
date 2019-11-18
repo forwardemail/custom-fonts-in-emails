@@ -128,7 +128,9 @@ import {
   getFontPathsByName,
   getFontPathByName,
   getAvailableFontPaths,
-  getAvailableFontNames
+  getAvailableFontNames,
+  // optional: this is a cache of all the custom fonts loaded
+  customFontsCache
 } from 'custom-fonts-in-emails';
 ```
 
@@ -209,6 +211,10 @@ A function that returns an Array of file paths for all of the user, local, netwo
 ### `customFonts.getAvailableFontNames()`
 
 The same as `customFonts.getAvailableFontPaths`, except it returns font names instead of font paths.
+
+### `customFonts.customFontsCache`
+
+This is an object of all of the custom fonts cached.
 
 
 ## Wishlist

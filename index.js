@@ -17,7 +17,7 @@ const useTypes = ['user', 'local', 'network', 'system'];
 
 const fontExtensions = ['otf', 'OTF', 'ttf', 'TTF', 'woff', 'WOFF'];
 
-const cache = {};
+const customFontsCache = {};
 
 let defaults = {
   text: '',
@@ -190,9 +190,9 @@ function svg(options) {
     options = setOptions(options);
     const hash = revisionHash(`svg:${safeStringify(options)}`);
 
-    if (cache[hash]) {
-      debug(`found cache result for ${hash}`);
-      return cache[hash];
+    if (customFontsCache[hash]) {
+      debug(`found customFontsCache result for ${hash}`);
+      return customFontsCache[hash];
     }
 
     const textToSvg = TextToSvg.loadSync(options.fontPath);
@@ -208,7 +208,7 @@ function svg(options) {
     $svg.attr('viewBox', `0 0 ${$svg.attr('width')} ${$svg.attr('height')}`);
     $svg = applyAttributes($svg, options.attrs);
     const result = $.html($svg);
-    cache[hash] = result;
+    customFontsCache[hash] = result;
     debug(`caching result for ${hash}`);
     return result;
   } catch (err) {
@@ -221,9 +221,9 @@ function img(options) {
     options = setOptions(options);
     const hash = revisionHash(`img:${safeStringify(options)}`);
 
-    if (cache[hash]) {
-      debug(`found cache result for ${hash}`);
-      return cache[hash];
+    if (customFontsCache[hash]) {
+      debug(`found customFontsCache result for ${hash}`);
+      return customFontsCache[hash];
     }
 
     const str = svg(options);
@@ -245,7 +245,7 @@ function img(options) {
       );
     $img = applyAttributes($img, options.attrs);
     const result = $.html($img);
-    cache[hash] = result;
+    customFontsCache[hash] = result;
     debug(`caching result for ${hash}`);
     return result;
   } catch (err) {
@@ -280,9 +280,9 @@ function png(options, scale) {
 
     const hash = revisionHash(`png:${safeStringify(options)}`);
 
-    if (cache[hash]) {
-      debug(`found cache result for ${hash}`);
-      return cache[hash];
+    if (customFontsCache[hash]) {
+      debug(`found customFontsCache result for ${hash}`);
+      return customFontsCache[hash];
     }
 
     const str = svg(options);
@@ -313,7 +313,7 @@ function png(options, scale) {
       );
     $img = applyAttributes($img, options.attrs);
     const result = $.html($img);
-    cache[hash] = result;
+    customFontsCache[hash] = result;
     debug(`caching result for ${hash}`);
     return result;
   } catch (err) {
@@ -342,7 +342,7 @@ function png3x(options) {
 function getClosestFontName(fontNameOrPath) {
   try {
     const hash = `closestFontName(${fontNameOrPath})`;
-    if (cache[hash]) return cache[hash];
+    if (customFontsCache[hash]) return customFontsCache[hash];
     const fontNames = getAvailableFontNames();
     const fontNamesByDistance = _.sortBy(
       _.map(fontNames, name => {
@@ -366,7 +366,7 @@ function getClosestFontName(fontNameOrPath) {
       throw new Error(
         `"${fontNameOrPath}" was not found, did you forget to install it?`
       );
-    cache[hash] = fontNamesByDistance[0].name;
+    customFontsCache[hash] = fontNamesByDistance[0].name;
     return fontNamesByDistance[0].name;
   } catch (err) {
     throw err;
@@ -376,9 +376,9 @@ function getClosestFontName(fontNameOrPath) {
 function getFontPathByName(name) {
   try {
     const hash = `fontPathByName(${name})`;
-    if (cache[hash]) return cache[hash];
+    if (customFontsCache[hash]) return customFontsCache[hash];
     const fontPathsByName = getFontPathsByName();
-    cache[hash] = fontPathsByName[name];
+    customFontsCache[hash] = fontPathsByName[name];
     return fontPathsByName[name];
   } catch (err) {
     throw err;
@@ -387,11 +387,12 @@ function getFontPathByName(name) {
 
 function getFontPathsByName() {
   try {
-    if (cache.fontPathsByName) return cache.fontPathsByName;
+    if (customFontsCache.fontPathsByName)
+      return customFontsCache.fontPathsByName;
     const fontNames = getAvailableFontNames();
     const fontPaths = getAvailableFontPaths();
     const fontPathsByName = _.zipObject(fontNames, fontPaths);
-    cache.fontPathsByName = fontPathsByName;
+    customFontsCache.fontPathsByName = fontPathsByName;
     return fontPathsByName;
   } catch (err) {
     throw err;
@@ -400,7 +401,7 @@ function getFontPathsByName() {
 
 function getAvailableFontPaths() {
   try {
-    if (cache.fontPaths) return cache.fontPaths;
+    if (customFontsCache.fontPaths) return customFontsCache.fontPaths;
     let fonts = _.map(useTypes, osFonts.getAllSync);
     fonts = _.flatten(fonts);
     const arr = [];
@@ -423,7 +424,7 @@ function getAvailableFontPaths() {
 
     // Sort the fonts A-Z
     const fontPaths = arr.sort();
-    cache.fontPaths = fontPaths;
+    customFontsCache.fontPaths = fontPaths;
     return fontPaths;
   } catch (err) {
     throw err;
@@ -432,12 +433,12 @@ function getAvailableFontPaths() {
 
 function getAvailableFontNames() {
   try {
-    if (cache.fontNames) return cache.fontNames;
+    if (customFontsCache.fontNames) return customFontsCache.fontNames;
     const fontPaths = getAvailableFontPaths();
     const fontNames = _.map(fontPaths, fontPath =>
       path.basename(fontPath, path.extname(fontPath))
     );
-    cache.fontNames = fontNames;
+    customFontsCache.fontNames = fontNames;
     return fontNames;
   } catch (err) {
     throw err;
@@ -457,5 +458,5 @@ module.exports = {
   getFontPathByName,
   getAvailableFontPaths,
   getAvailableFontNames,
-  cache
+  customFontsCache
 };

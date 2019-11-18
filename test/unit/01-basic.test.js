@@ -328,6 +328,6 @@ describe('custom-fonts-in-emails', () => {
     });
     const svg = customFonts.svg(options);
     const hash = revisionHash(`svg:${safeStringify(options)}`);
-    expect(customFonts.cache[hash], svg);
+    expect(customFonts.customFontsCache[hash], svg);
   });
 });
