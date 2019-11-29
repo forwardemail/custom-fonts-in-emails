@@ -1,5 +1,0 @@
---timeout 10000
---recursive
---reporter spec
---ui bdd
-test/**/*.test.js

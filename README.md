@@ -172,15 +172,15 @@ The `options` argument in all [API](#api) methods is an Object that accepts the 
 
 ### `customFonts.setDefaults(options)`
 
-A function that accepts [options](#options) to set defaults for future use and returns the new package defaults.
+A function that accepts [options](#options) to set defaults for future use and returns a Promise that resolveswith the new package defaults.
 
 ### `customFonts.setOptions(options)`
 
-A function that accepts [options](#options) and returns refined `options`.
+A function that accepts [options](#options) and returns a Promise that resolves with refined `options`.
 
 ### `customFonts.svg(options)`
 
-A function that accepts [options](#options) and returns with a String of the `<svg>` HTML tag for the custom font.
+A function that accepts [options](#options) and returns a Promise that resolves with a String of the `<svg>` HTML tag for the custom font.
 
 This function takes the argument `options` and passes it to `customFonts.setOptions`.
 

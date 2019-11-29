@@ -18,31 +18,30 @@
     "fast-levenshtein": "^2.0.6",
     "fast-safe-stringify": "^2.0.7",
     "is-string-and-not-blank": "^0.0.2",
-    "lipo": "^0.0.10",
+    "lipo": "^1.0.1",
     "lodash": "^4.17.15",
     "os-fonts": "^0.5.0",
     "pkg-dir": "^4.2.0",
     "rev-hash": "^3.0.0",
-    "text-to-svg": "^3.1.5"
+    "text-to-svg": "^3.1.5",
+    "universalify": "^0.1.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
+    "ava": "^2.4.0",
     "bitter-font": "^0.0.1",
-    "chai": "^4.2.0",
     "codecov": "^3.6.1",
-    "dirty-chai": "^2.0.1",
-    "eslint": "^6.6.0",
+    "cross-env": "^6.0.3",
+    "eslint": "^6.7.1",
     "eslint-config-xo-lass": "^1.0.3",
-    "eslint-plugin-mocha": "^6.2.1",
     "fixpack": "^2.3.1",
     "husky": "^3.1.0",
-    "istanbul": "^1.1.0-alpha.1",
-    "lint-staged": "^9.4.3",
-    "mocha": "^6.2.2",
+    "lint-staged": "^9.5.0",
+    "nyc": "^14.1.1",
     "remark-cli": "^7.0.1",
     "remark-preset-github": "^0.0.16",
-    "xo": "0.24"
+    "xo": "^0.25.3"
   },
   "engines": {
     "node": ">= 8.x"
@@ -109,23 +108,16 @@
   },
   "repository": "ladjs/custom-fonts-in-emails",
   "scripts": {
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "lint": "xo && remark . -qfo",
-    "test": "npm run lint && mocha"
+    "test": "npm run lint && npm run test-coverage",
+    "test-coverage": "cross-env NODE_ENV=test nyc ava"
   },
   "xo": {
-    "plugins": [
-      "mocha"
-    ],
+    "prettier": true,
+    "space": true,
     "extends": [
       "xo-lass"
-    ],
-    "envs": [
-      "mocha"
-    ],
-    "rules": {
-      "mocha/no-exclusive-tests": "error"
-    },
-    "prettier": true,
-    "space": true
+    ]
   }
 }

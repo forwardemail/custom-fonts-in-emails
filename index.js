@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { promisify } = require('util');
 
 const $ = require('cheerio');
 const Lipo = require('lipo');
@@ -12,12 +13,13 @@ const osFonts = require('os-fonts');
 const pkgDir = require('pkg-dir');
 const revisionHash = require('rev-hash');
 const safeStringify = require('fast-safe-stringify');
+const universalify = require('universalify');
 
 const useTypes = ['user', 'local', 'network', 'system'];
-
 const fontExtensions = ['otf', 'OTF', 'ttf', 'TTF', 'woff', 'WOFF'];
-
 const customFontsCache = {};
+
+const stat = promisify(fs.stat);
 
 let defaults = {
   text: '',
@@ -40,13 +42,15 @@ let defaults = {
   }
 };
 
+const load = universalify.fromCallback(TextToSvg.load);
+
 function setDefaults(options) {
   defaults = _.defaultsDeep(options, defaults);
   return defaults;
 }
 
 // eslint-disable-next-line complexity
-function setOptions(options) {
+async function setOptions(options) {
   // Clone to prevent interference
   options = _.cloneDeep(options);
 
@@ -115,54 +119,52 @@ function setOptions(options) {
 
   // If `fontNameOrPath` was not a valid font path (with smart detection)
   // then result to use `getClosestFontName` and `getFontPathByName`
-  try {
-    const ext = path.extname(options.fontNameOrPath);
-    const fontName = path.basename(options.fontNameOrPath, ext);
+  const ext = path.extname(options.fontNameOrPath);
+  const fontName = path.basename(options.fontNameOrPath, ext);
 
-    if (_.includes(fontExtensions, ext)) {
-      const stats = fs.statSync(path.resolve(options.fontNameOrPath));
-      if (!stats.isFile())
-        throw new Error(
-          `${path.resolve(options.fontNameOrPath)} was not a valid file`
-        );
+  if (_.includes(fontExtensions, ext)) {
+    const stats = await stat(path.resolve(options.fontNameOrPath));
+    if (!stats.isFile())
+      throw new Error(
+        `${path.resolve(options.fontNameOrPath)} was not a valid file`
+      );
 
-      options.fontPath = path.resolve(options.fontNameOrPath);
-      options.fontName = fontName;
-    } else {
-      const fontDir = path.dirname(path.resolve(options.fontNameOrPath));
+    options.fontPath = path.resolve(options.fontNameOrPath);
+    options.fontName = fontName;
+  } else {
+    const fontDir = path.dirname(path.resolve(options.fontNameOrPath));
 
-      let data = _.map(fontExtensions, ext => {
+    let data = await Promise.all(
+      fontExtensions.map(async ext => {
         const filePath = `${fontDir}/${fontName}.${ext}`;
         try {
-          const stats = fs.statSync(filePath);
+          const stats = await stat(filePath);
           return stats.isFile() ? filePath : false;
-        } catch (err) {
+        } catch {
           return false;
         }
-      });
+      })
+    );
 
-      // Remove false matches
-      data = _.compact(data);
+    // Remove false matches
+    data = _.compact(data);
 
-      // If this was a directory path then throw an error that it was not found
-      if (options.fontNameOrPath.indexOf(path.sep) !== -1 && data.length === 0)
-        throw new Error(
-          `\`fontNameOrPath\` "${options.fontNameOrPath}" file was not found`
-        );
+    // If this was a directory path then throw an error that it was not found
+    if (options.fontNameOrPath.includes(path.sep) && data.length === 0)
+      throw new Error(
+        `\`fontNameOrPath\` "${options.fontNameOrPath}" file was not found`
+      );
 
-      if (data.length > 0) {
-        options.fontName = fontName;
-        options.fontPath = data[0];
-      } else {
-        options.fontName = getClosestFontName(options.fontNameOrPath);
-        options.fontPath = getFontPathByName(options.fontName);
-      }
+    if (data.length > 0) {
+      options.fontName = fontName;
+      options.fontPath = data[0];
+    } else {
+      options.fontName = await getClosestFontName(options.fontNameOrPath);
+      options.fontPath = await getFontPathByName(options.fontName);
     }
-
-    return options;
-  } catch (err) {
-    throw err;
   }
+
+  return options;
 }
 
 // eslint-disable-next-line max-params
@@ -185,264 +187,220 @@ function applyAttributes($el, attrs) {
   return $el;
 }
 
-function svg(options) {
-  try {
-    options = setOptions(options);
-    const hash = revisionHash(`svg:${safeStringify(options)}`);
-
-    if (customFontsCache[hash]) {
-      debug(`found customFontsCache result for ${hash}`);
-      return customFontsCache[hash];
-    }
-
-    const textToSvg = TextToSvg.loadSync(options.fontPath);
-    const str = textToSvg.getSVG(options.text, options.textToSvg);
-    let $svg = $(str);
-    const $rect = $('<rect>');
-    $rect.attr('width', $svg.attr('width'));
-    $rect.attr('height', $svg.attr('height'));
-    $rect.attr('fill', options.backgroundColor);
-    $svg.prepend($rect);
-    $svg.attr('width', Math.round(parseFloat($svg.attr('width'))));
-    $svg.attr('height', Math.round(parseFloat($svg.attr('height'))));
-    $svg.attr('viewBox', `0 0 ${$svg.attr('width')} ${$svg.attr('height')}`);
-    $svg = applyAttributes($svg, options.attrs);
-    const result = $.html($svg);
-    customFontsCache[hash] = result;
-    debug(`caching result for ${hash}`);
-    return result;
-  } catch (err) {
-    throw err;
+async function svg(options) {
+  options = await setOptions(options);
+  const hash = revisionHash(`svg:${safeStringify(options)}`);
+  if (customFontsCache[hash]) {
+    debug(`found customFontsCache result for ${hash}`, customFontsCache[hash]);
+    return customFontsCache[hash];
   }
+
+  const textToSvg = await load(options.fontPath);
+  const str = textToSvg.getSVG(options.text, options.textToSvg);
+  let $svg = $(str);
+  const $rect = $('<rect>');
+  $rect.attr('width', $svg.attr('width'));
+  $rect.attr('height', $svg.attr('height'));
+  $rect.attr('fill', options.backgroundColor);
+  $svg.prepend($rect);
+  $svg.attr('width', Math.round(parseFloat($svg.attr('width'))));
+  $svg.attr('height', Math.round(parseFloat($svg.attr('height'))));
+  $svg.attr('viewBox', `0 0 ${$svg.attr('width')} ${$svg.attr('height')}`);
+  $svg = applyAttributes($svg, options.attrs);
+  const result = $.html($svg);
+  customFontsCache[hash] = result;
+  debug(`caching result for ${hash}`, customFontsCache[hash]);
+  return result;
 }
 
-function img(options) {
-  try {
-    options = setOptions(options);
-    const hash = revisionHash(`img:${safeStringify(options)}`);
+async function img(options) {
+  options = await setOptions(options);
+  const hash = revisionHash(`img:${safeStringify(options)}`);
 
-    if (customFontsCache[hash]) {
-      debug(`found customFontsCache result for ${hash}`);
-      return customFontsCache[hash];
-    }
+  if (customFontsCache[hash]) {
+    debug(`found customFontsCache result for ${hash}`, customFontsCache[hash]);
+    return customFontsCache[hash];
+  }
 
-    const str = svg(options);
-    const $svg = $(str);
-    let $img = $('<img>');
-    $img.attr('width', $svg.attr('width'));
-    $img.attr('height', $svg.attr('height'));
-    $img.attr(
-      'src',
-      `data:image/svg+xml;base64,${Buffer.from(str, 'utf8').toString('base64')}`
+  const str = await svg(options);
+  const $svg = $(str);
+  let $img = $('<img>');
+  $img.attr('width', $svg.attr('width'));
+  $img.attr('height', $svg.attr('height'));
+  $img.attr(
+    'src',
+    `data:image/svg+xml;base64,${Buffer.from(str, 'utf8').toString('base64')}`
+  );
+  if (options.supportsFallback)
+    options.attrs = renderFallback(
+      options.text,
+      $svg.attr('height'),
+      options.fontColor,
+      options.backgroundColor,
+      options.attrs
     );
-    if (options.supportsFallback)
-      options.attrs = renderFallback(
-        options.text,
-        $svg.attr('height'),
-        options.fontColor,
-        options.backgroundColor,
-        options.attrs
-      );
-    $img = applyAttributes($img, options.attrs);
-    const result = $.html($img);
-    customFontsCache[hash] = result;
-    debug(`caching result for ${hash}`);
-    return result;
-  } catch (err) {
-    throw err;
-  }
+  $img = applyAttributes($img, options.attrs);
+  const result = $.html($img);
+  customFontsCache[hash] = result;
+  debug(`caching result for ${hash}`, result);
+  return result;
 }
 
-function png(options, scale) {
+async function png(options, scale) {
   // Default scale it 1
   scale = scale || 1;
 
   if (!_.isNumber(scale)) throw new Error('`scale` must be a Number');
 
-  try {
-    options = setOptions(options);
+  options = await setOptions(options);
 
-    //
-    // initially I tried to use the package `svgo`
-    // to optimize the image and remove invisible whitespace
-    // but this feature isn't available yet
-    // https://github.com/svg/svgo/issues/67
-    //
-    // also I used Sharp directly, but then created Lipo
-    // to alleviate the need for developers to install libvips or worry
-    // about installing extra dependencies on their system
-    // but still allow them to use the brilliance of Sharp
-    //
+  //
+  // initially I tried to use the package `svgo`
+  // to optimize the image and remove invisible whitespace
+  // but this feature isn't available yet
+  // https://github.com/svg/svgo/issues/67
+  //
+  // also I used Sharp directly, but then created Lipo
+  // to alleviate the need for developers to install libvips or worry
+  // about installing extra dependencies on their system
+  // but still allow them to use the brilliance of Sharp
+  //
 
-    const { fontSize } = options;
-    options.fontSize = Math.round(fontSize * scale);
-    options.textToSvg.fontSize = options.fontSize;
+  const { fontSize } = options;
+  options.fontSize = Math.round(fontSize * scale);
+  options.textToSvg.fontSize = options.fontSize;
 
-    const hash = revisionHash(`png:${safeStringify(options)}`);
+  const hash = revisionHash(`png:${safeStringify(options)}`);
 
-    if (customFontsCache[hash]) {
-      debug(`found customFontsCache result for ${hash}`);
-      return customFontsCache[hash];
-    }
-
-    const str = svg(options);
-    const buf = Buffer.from(str, 'utf8');
-
-    const getImage = new Lipo()(buf);
-
-    if (options.trim) getImage.trim(options.trimTolerance);
-
-    if (options.resizeToFontSize)
-      getImage.resize(null, Math.round(fontSize * scale));
-
-    const imageBuffer = getImage.png().toBufferSync();
-
-    const metadata = new Lipo()(imageBuffer).metadataSync();
-
-    let $img = $('<img>');
-    $img.attr('width', Math.round(metadata.width / scale));
-    $img.attr('height', Math.round(metadata.height / scale));
-    $img.attr('src', `data:image/png;base64,${imageBuffer.toString('base64')}`);
-    if (options.supportsFallback)
-      options.attrs = renderFallback(
-        options.text,
-        Math.round(metadata.height / scale),
-        options.fontColor,
-        options.backgroundColor,
-        options.attrs
-      );
-    $img = applyAttributes($img, options.attrs);
-    const result = $.html($img);
-    customFontsCache[hash] = result;
-    debug(`caching result for ${hash}`);
-    return result;
-  } catch (err) {
-    throw err;
+  if (customFontsCache[hash]) {
+    debug(`found customFontsCache result for ${hash}`, customFontsCache[hash]);
+    return customFontsCache[hash];
   }
-}
 
-function png2x(options) {
-  try {
-    const str = png(options, 2);
-    return str;
-  } catch (err) {
-    throw err;
-  }
-}
+  const str = await svg(options);
+  const buf = Buffer.from(str, 'utf8');
 
-function png3x(options) {
-  try {
-    const str = png(options, 3);
-    return str;
-  } catch (err) {
-    throw err;
-  }
-}
+  const getImage = new Lipo()(buf);
 
-function getClosestFontName(fontNameOrPath) {
-  try {
-    const hash = `closestFontName(${fontNameOrPath})`;
-    if (customFontsCache[hash]) return customFontsCache[hash];
-    const fontNames = getAvailableFontNames();
-    const fontNamesByDistance = _.sortBy(
-      _.map(fontNames, name => {
-        return {
-          name,
-          distance: levenshtein.get(
-            fontNameOrPath.toLowerCase(),
-            name.toLowerCase()
-          )
-        };
-      }),
-      ['distance', 'name']
+  if (options.trim) getImage.trim(options.trimTolerance);
+
+  if (options.resizeToFontSize)
+    getImage.resize(null, Math.round(fontSize * scale));
+
+  const imageBuffer = await getImage.png().toBuffer();
+
+  const metadata = await new Lipo()(imageBuffer).metadata();
+
+  let $img = $('<img>');
+  $img.attr('width', Math.round(metadata.width / scale));
+  $img.attr('height', Math.round(metadata.height / scale));
+  $img.attr('src', `data:image/png;base64,${imageBuffer.toString('base64')}`);
+  if (options.supportsFallback)
+    options.attrs = renderFallback(
+      options.text,
+      Math.round(metadata.height / scale),
+      options.fontColor,
+      options.backgroundColor,
+      options.attrs
     );
-    // If there were no matches or if the distance
-    // of character difference is 50% different
-    // than actual length of the font name, then reject it
-    if (
-      fontNamesByDistance.length === 0 ||
-      fontNamesByDistance[0].distance > fontNameOrPath.length / 2
-    )
-      throw new Error(
-        `"${fontNameOrPath}" was not found, did you forget to install it?`
-      );
-    customFontsCache[hash] = fontNamesByDistance[0].name;
-    return fontNamesByDistance[0].name;
-  } catch (err) {
-    throw err;
-  }
+  $img = applyAttributes($img, options.attrs);
+  const result = $.html($img);
+  customFontsCache[hash] = result;
+  debug(`caching result for ${hash}`, result);
+  return result;
 }
 
-function getFontPathByName(name) {
-  try {
-    const hash = `fontPathByName(${name})`;
-    if (customFontsCache[hash]) return customFontsCache[hash];
-    const fontPathsByName = getFontPathsByName();
-    customFontsCache[hash] = fontPathsByName[name];
-    return fontPathsByName[name];
-  } catch (err) {
-    throw err;
-  }
+async function png2x(options) {
+  return png(options, 2);
 }
 
-function getFontPathsByName() {
-  try {
-    if (customFontsCache.fontPathsByName)
-      return customFontsCache.fontPathsByName;
-    const fontNames = getAvailableFontNames();
-    const fontPaths = getAvailableFontPaths();
-    const fontPathsByName = _.zipObject(fontNames, fontPaths);
-    customFontsCache.fontPathsByName = fontPathsByName;
-    return fontPathsByName;
-  } catch (err) {
-    throw err;
-  }
+async function png3x(options) {
+  return png(options, 3);
 }
 
-function getAvailableFontPaths() {
-  try {
-    if (customFontsCache.fontPaths) return customFontsCache.fontPaths;
-    let fonts = _.map(useTypes, osFonts.getAllSync);
-    fonts = _.flatten(fonts);
-    const arr = [];
-    // add fonts from system
-    for (let i = 0; i < fonts.length; i++) {
-      let ext = path.extname(fonts[i]);
-      if (ext.indexOf('.') === 0) ext = ext.substring(1);
-      if (fontExtensions.includes(ext)) arr.push(fonts[i]);
-    }
-
-    // add node_modules folder
-    const nodeModuleFonts = osFonts.getFontsInDirectorySync(
-      path.join(pkgDir.sync(), 'node_modules')
+async function getClosestFontName(fontNameOrPath) {
+  const hash = `closestFontName(${fontNameOrPath})`;
+  if (customFontsCache[hash]) return customFontsCache[hash];
+  const fontNames = await getAvailableFontNames();
+  const fontNamesByDistance = _.sortBy(
+    _.map(fontNames, name => {
+      return {
+        name,
+        distance: levenshtein.get(
+          fontNameOrPath.toLowerCase(),
+          name.toLowerCase()
+        )
+      };
+    }),
+    ['distance', 'name']
+  );
+  // If there were no matches or if the distance
+  // of character difference is 50% different
+  // than actual length of the font name, then reject it
+  if (
+    fontNamesByDistance.length === 0 ||
+    fontNamesByDistance[0].distance > fontNameOrPath.length / 2
+  )
+    throw new Error(
+      `"${fontNameOrPath}" was not found, did you forget to install it?`
     );
-    for (let i = 0; i < nodeModuleFonts.length; i++) {
-      let ext = path.extname(nodeModuleFonts[i]);
-      if (ext.indexOf('.') === 0) ext = ext.substring(1);
-      if (fontExtensions.includes(ext)) arr.push(nodeModuleFonts[i]);
-    }
-
-    // Sort the fonts A-Z
-    const fontPaths = arr.sort();
-    customFontsCache.fontPaths = fontPaths;
-    return fontPaths;
-  } catch (err) {
-    throw err;
-  }
+  customFontsCache[hash] = fontNamesByDistance[0].name;
+  return fontNamesByDistance[0].name;
 }
 
-function getAvailableFontNames() {
-  try {
-    if (customFontsCache.fontNames) return customFontsCache.fontNames;
-    const fontPaths = getAvailableFontPaths();
-    const fontNames = _.map(fontPaths, fontPath =>
-      path.basename(fontPath, path.extname(fontPath))
-    );
-    customFontsCache.fontNames = fontNames;
-    return fontNames;
-  } catch (err) {
-    throw err;
+async function getFontPathByName(name) {
+  const hash = `fontPathByName(${name})`;
+  if (customFontsCache[hash]) return customFontsCache[hash];
+  const fontPathsByName = await getFontPathsByName();
+  customFontsCache[hash] = fontPathsByName[name];
+  return fontPathsByName[name];
+}
+
+async function getFontPathsByName() {
+  if (customFontsCache.fontPathsByName) return customFontsCache.fontPathsByName;
+  const fontNames = await getAvailableFontNames();
+  const fontPaths = await getAvailableFontPaths();
+  const fontPathsByName = _.zipObject(fontNames, fontPaths);
+  customFontsCache.fontPathsByName = fontPathsByName;
+  return fontPathsByName;
+}
+
+async function getAvailableFontPaths() {
+  if (customFontsCache.fontPaths) return customFontsCache.fontPaths;
+  let fonts = await Promise.all(useTypes.map(type => osFonts.getAll(type)));
+  fonts = _.flatten(fonts);
+  const arr = [];
+  // add fonts from system
+  for (const element of fonts) {
+    let ext = path.extname(element);
+    if (ext.indexOf('.') === 0) ext = ext.slice(1);
+    if (fontExtensions.includes(ext)) arr.push(element);
   }
+
+  // add node_modules folder
+  const nodeModuleFonts = await osFonts.getFontsInDirectory(
+    path.join(pkgDir.sync(), 'node_modules')
+  );
+  for (const element of nodeModuleFonts) {
+    let ext = path.extname(element);
+    if (ext.indexOf('.') === 0) ext = ext.slice(1);
+    if (fontExtensions.includes(ext)) arr.push(element);
+  }
+
+  // Sort the fonts A-Z
+  const fontPaths = arr.sort();
+  customFontsCache.fontPaths = fontPaths;
+  return fontPaths;
+}
+
+async function getAvailableFontNames() {
+  if (customFontsCache.fontNames) return customFontsCache.fontNames;
+  const fontPaths = await getAvailableFontPaths();
+  const fontNames = _.map(fontPaths, fontPath =>
+    path.basename(fontPath, path.extname(fontPath))
+  );
+  customFontsCache.fontNames = fontNames;
+  return fontNames;
 }
 
 module.exports = {
