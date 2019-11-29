@@ -27,6 +27,9 @@
     "universalify": "^0.1.2"
   },
   "devDependencies": {
+    "@babel/cli": "^7.7.4",
+    "@babel/core": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
     "ava": "^2.4.0",
@@ -95,7 +98,7 @@
       "git add"
     ]
   },
-  "main": "index.js",
+  "main": "lib/index.js",
   "prettier": {
     "singleQuote": true,
     "bracketSpacing": true,
@@ -108,10 +111,15 @@
   },
   "repository": "ladjs/custom-fonts-in-emails",
   "scripts": {
+    "ava": "cross-env NODE_ENV=test ava",
+    "build": "node_modules/.bin/babel src --out-dir lib",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "lint": "xo && remark . -qfo",
-    "test": "npm run lint && npm run test-coverage",
-    "test-coverage": "cross-env NODE_ENV=test nyc ava"
+    "nyc": "cross-env NODE_ENV=test nyc ava",
+    "precommit": "lint-staged && npm test",
+    "test": "npm run build && npm run lint && npm run ava",
+    "test-coverage": "npm run build && npm run lint && npm run nyc",
+    "watch": "node_modules/.bin/babel src --watch --out-dir lib"
   },
   "xo": {
     "prettier": true,

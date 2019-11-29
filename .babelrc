@@ -1,0 +1,10 @@
+{
+  "presets": [
+    ["@babel/env", {
+      "targets": {
+        "node": "8.9.4"
+      }
+    }]
+  ],
+  "sourceMaps": "inline"
+}
