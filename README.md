@@ -242,7 +242,7 @@ Thanks to the public domain font [GoudyBookletter1911][goudybookletter1911] for 
 
 [lad-url]: https://lad.js.org
 
-[slack-url]: https://slack.crocodilejs.com
+[slack-url]: https://join.slack.com/t/ladjs/shared_invite/zt-fqei6z11-Bq2trhwHQxVc5x~ifiZG0g
 
 [nodemailer]: https://github.com/nodemailer/nodemailer
 
