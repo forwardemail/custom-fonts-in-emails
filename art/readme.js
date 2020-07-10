@@ -18,9 +18,9 @@ const options = {
   fontSize: 40
 };
 
-const data = _.map(['svg', 'img', 'png', 'png2x', 'png3x'], method => {
+const data = _.map(['svg', 'img', 'png', 'png2x', 'png3x'], (method) => {
   return customFonts[method](options);
 });
-_.each(data, str => {
-  console.log(`<br />\n${str}\n<br />`);
+_.each(data, (string) => {
+  console.log(`<br />\n${string}\n<br />`);
 });

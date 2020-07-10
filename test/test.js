@@ -15,7 +15,7 @@ const fontSize = '24px';
 
 const readFile = promisify(fs.readFile);
 
-test('should trim and resize', async t => {
+test('should trim and resize', async (t) => {
   await t.notThrowsAsync(
     customFonts.img({
       text,
@@ -25,25 +25,25 @@ test('should trim and resize', async t => {
   );
 });
 
-_.each(['', 0, 100], val => {
-  test(`throws for invalid options.trimTolerance value of "${val}"`, async t => {
+_.each(['', 0, 100], (value) => {
+  test(`throws for invalid options.trimTolerance value of "${value}"`, async (t) => {
     await t.throwsAsync(
       customFonts.setOptions({
-        trimTolerance: val
+        trimTolerance: value
       })
     );
   });
 });
 
-_.each(['supportsFallback', 'resizeToFontSize', 'trim'], opt => {
-  test(`throws for non-Boolean \`options.${opt}\``, async t => {
-    const opts = {};
-    opts[opt] = '';
-    await t.throwsAsync(customFonts.setOptions(opts));
+_.each(['supportsFallback', 'resizeToFontSize', 'trim'], (opt) => {
+  test(`throws for non-Boolean \`options.${opt}\``, async (t) => {
+    const options = {};
+    options[opt] = '';
+    await t.throwsAsync(customFonts.setOptions(options));
   });
 });
 
-test('should get file in ./fonts folder if used wrong extension', async t => {
+test('should get file in ./fonts folder if used wrong extension', async (t) => {
   const options = await customFonts.setOptions({
     fontNameOrPath: path.join(__dirname, 'fixtures', 'GoudyBookletter1911.woff')
   });
@@ -54,7 +54,7 @@ test('should get file in ./fonts folder if used wrong extension', async t => {
   );
 });
 
-test('should get file in ./fonts folder with correct extension', async t => {
+test('should get file in ./fonts folder with correct extension', async (t) => {
   const options = await customFonts.setOptions({
     fontNameOrPath: path.join(__dirname, 'fixtures', 'GoudyBookletter1911.otf')
   });
@@ -65,7 +65,7 @@ test('should get file in ./fonts folder with correct extension', async t => {
   );
 });
 
-test('should get file in ./fonts folder without an extension', async t => {
+test('should get file in ./fonts folder without an extension', async (t) => {
   const options = await customFonts.setOptions({
     fontNameOrPath: path.join(__dirname, 'fixtures', 'GoudyBookletter1911')
   });
@@ -76,7 +76,7 @@ test('should get file in ./fonts folder without an extension', async t => {
   );
 });
 
-test('throws if we specify an invalid font file path', async t => {
+test('throws if we specify an invalid font file path', async (t) => {
   await t.throwsAsync(
     customFonts.setOptions({
       fontNameOrPath: path.join(__dirname, 'fixtures', 'GoudyBookletter1912')
@@ -84,7 +84,7 @@ test('throws if we specify an invalid font file path', async t => {
   );
 });
 
-test('should have custom attributes when passing them', async t => {
+test('should have custom attributes when passing them', async (t) => {
   const svg = await customFonts.svg({
     text,
     attrs: {
@@ -95,7 +95,7 @@ test('should have custom attributes when passing them', async t => {
   t.is($svg.attr('foo'), 'bar');
 });
 
-test('should return hello world svg', async t => {
+test('should return hello world svg', async (t) => {
   const svg = await customFonts.svg({
     text
   });
@@ -106,8 +106,8 @@ test('should return hello world svg', async t => {
   t.is(svg.trim(), expectedSvg.trim());
 });
 
-test('should support custom background color for img', async t => {
-  const str = await customFonts.img({
+test('should support custom background color for img', async (t) => {
+  const string = await customFonts.img({
     text,
     backgroundColor: 'red'
   });
@@ -115,7 +115,7 @@ test('should support custom background color for img', async t => {
     path.join(__dirname, 'fixtures', 'color-img.html'),
     'utf8'
   );
-  t.is(str.trim(), expectedColor.trim());
+  t.is(string.trim(), expectedColor.trim());
   //
   // TODO: it'd be cool to use these two packages
   // to accurately check the background color from sharp()
@@ -124,10 +124,10 @@ test('should support custom background color for img', async t => {
   //
 });
 
-_.each(['img', 'png'], method => {
-  test(`should set alt, title, and style on ${method}`, async t => {
-    const str = await customFonts[method]({ text });
-    const $img = $(str);
+_.each(['img', 'png'], (method) => {
+  test(`should set alt, title, and style on ${method}`, async (t) => {
+    const string = await customFonts[method]({ text });
+    const $img = $(string);
     t.is($img.attr('alt'), text);
     t.is($img.attr('title'), text);
     t.true(
@@ -136,7 +136,7 @@ _.each(['img', 'png'], method => {
   });
 });
 
-test('should return hello world img', async t => {
+test('should return hello world img', async (t) => {
   const img = await customFonts.img({ text });
   const expectedImg = await readFile(
     path.join(__dirname, 'fixtures', 'hello-world-img.html'),
@@ -145,7 +145,7 @@ test('should return hello world img', async t => {
   t.is(img.trim(), expectedImg.trim());
 });
 
-test('should return png@1x', async t => {
+test('should return png@1x', async (t) => {
   const png = await customFonts.png({ text, fontSize });
   const expectedPng = await readFile(
     path.join(__dirname, 'fixtures', 'hello-world-png.html'),
@@ -154,12 +154,12 @@ test('should return png@1x', async t => {
   t.is(png.trim(), expectedPng.trim());
 });
 
-test('throws if we pass an invalid scale to png', async t => {
+test('throws if we pass an invalid scale to png', async (t) => {
   const error = await t.throwsAsync(customFonts.png({ text }, 'foo'));
   t.is(error.message, '`scale` must be a Number');
 });
 
-test('should return png@2x', async t => {
+test('should return png@2x', async (t) => {
   const png = await customFonts.png2x({ text, fontSize });
   const expectedPng = await readFile(
     path.join(__dirname, 'fixtures', 'hello-world-png@2x.html'),
@@ -168,7 +168,7 @@ test('should return png@2x', async t => {
   t.is(png.trim(), expectedPng.trim());
 });
 
-test('should return png@3x', async t => {
+test('should return png@3x', async (t) => {
   const png = await customFonts.png3x({ text, fontSize });
   const expectedPng = await readFile(
     path.join(__dirname, 'fixtures', 'hello-world-png@3x.html'),
@@ -177,36 +177,36 @@ test('should return png@3x', async t => {
   t.is(png.trim(), expectedPng.trim());
 });
 
-test('throws if we did not have a close match at all', async t => {
+test('throws if we did not have a close match at all', async (t) => {
   await t.throwsAsync(customFonts.getClosestFontName('Foo Bar Baz Beep'));
 });
 
-test('should return closest font name if we had a typo', async t => {
+test('should return closest font name if we had a typo', async (t) => {
   const font = await customFonts.getClosestFontName('Gorgia');
   t.is(font, 'Georgia');
 });
 
-test('should get font paths by name', async t => {
+test('should get font paths by name', async (t) => {
   const fontPathsByName = await customFonts.getFontPathsByName();
   t.true(typeof fontPathsByName === 'object');
 });
 
-test('should get available font paths', async t => {
+test('should get available font paths', async (t) => {
   const fontPaths = await customFonts.getAvailableFontPaths();
   t.true(Array.isArray(fontPaths) && fontPaths.length > 0);
 });
 
-test('should get available font names', async t => {
+test('should get available font names', async (t) => {
   const fontNames = await customFonts.getAvailableFontNames();
   t.true(Array.isArray(fontNames) && fontNames.length > 0);
 });
 
-test('should return closest font path by name', async t => {
+test('should return closest font path by name', async (t) => {
   const fontPath = await customFonts.getFontPathByName('Arial');
   t.true(typeof fontPath === 'string');
 });
 
-test('should get file in node_modules folder if used wrong extension', async t => {
+test('should get file in node_modules folder if used wrong extension', async (t) => {
   const options = await customFonts.setOptions({
     fontNameOrPath: 'Bitter Bold'
   });
@@ -225,7 +225,7 @@ test('should get file in node_modules folder if used wrong extension', async t =
   );
 });
 
-test('should get file in node_modules folder with correct extension', async t => {
+test('should get file in node_modules folder with correct extension', async (t) => {
   const options = await customFonts.setOptions({
     fontNameOrPath: 'Bitter-Bold.ttf'
   });
@@ -244,7 +244,7 @@ test('should get file in node_modules folder with correct extension', async t =>
   );
 });
 
-test('should get file in node_modules folder without an extension', async t => {
+test('should get file in node_modules folder without an extension', async (t) => {
   const options = await customFonts.setOptions({
     fontNameOrPath: 'Bitter-Bold'
   });
@@ -263,7 +263,7 @@ test('should get file in node_modules folder without an extension', async t => {
   );
 });
 
-test('should store to cache', async t => {
+test('should store to cache', async (t) => {
   const options = await customFonts.setOptions({
     text,
     attrs: {

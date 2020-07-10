@@ -67,7 +67,7 @@ async function setOptions(options) {
   // Convert font size in pixels to number
   // and remove px, so we just convert to digits only
   if (_.isString(options.fontSize))
-    options.fontSize = parseFloat(options.fontSize);
+    options.fontSize = Number.parseFloat(options.fontSize);
 
   // Round to nearest whole pixel
   options.fontSize = Math.round(options.fontSize);
@@ -135,12 +135,13 @@ async function setOptions(options) {
     const fontDir = path.dirname(path.resolve(options.fontNameOrPath));
 
     let data = await Promise.all(
-      fontExtensions.map(async ext => {
+      fontExtensions.map(async (ext) => {
         const filePath = `${fontDir}/${fontName}.${ext}`;
         try {
           const stats = await stat(filePath);
           return stats.isFile() ? filePath : false;
-        } catch {
+        } catch (err) {
+          debug(err);
           return false;
         }
       })
@@ -180,11 +181,11 @@ function renderFallback(text, fontSize, fontColor, backgroundColor, attrs) {
   return attrs;
 }
 
-function applyAttributes($el, attrs) {
-  _.each(_.keys(attrs), key => {
-    $el.attr(key, attrs[key]);
+function applyAttributes($element, attrs) {
+  _.each(_.keys(attrs), (key) => {
+    $element.attr(key, attrs[key]);
   });
-  return $el;
+  return $element;
 }
 
 async function svg(options) {
@@ -196,15 +197,15 @@ async function svg(options) {
   }
 
   const textToSvg = await load(options.fontPath);
-  const str = textToSvg.getSVG(options.text, options.textToSvg);
-  let $svg = $(str);
+  const string = textToSvg.getSVG(options.text, options.textToSvg);
+  let $svg = $(string);
   const $rect = $('<rect>');
   $rect.attr('width', $svg.attr('width'));
   $rect.attr('height', $svg.attr('height'));
   $rect.attr('fill', options.backgroundColor);
   $svg.prepend($rect);
-  $svg.attr('width', Math.round(parseFloat($svg.attr('width'))));
-  $svg.attr('height', Math.round(parseFloat($svg.attr('height'))));
+  $svg.attr('width', Math.round(Number.parseFloat($svg.attr('width'))));
+  $svg.attr('height', Math.round(Number.parseFloat($svg.attr('height'))));
   $svg.attr('viewBox', `0 0 ${$svg.attr('width')} ${$svg.attr('height')}`);
   $svg = applyAttributes($svg, options.attrs);
   const result = $.html($svg);
@@ -222,14 +223,16 @@ async function img(options) {
     return customFontsCache[hash];
   }
 
-  const str = await svg(options);
-  const $svg = $(str);
+  const string = await svg(options);
+  const $svg = $(string);
   let $img = $('<img>');
   $img.attr('width', $svg.attr('width'));
   $img.attr('height', $svg.attr('height'));
   $img.attr(
     'src',
-    `data:image/svg+xml;base64,${Buffer.from(str, 'utf8').toString('base64')}`
+    `data:image/svg+xml;base64,${Buffer.from(string, 'utf8').toString(
+      'base64'
+    )}`
   );
   if (options.supportsFallback)
     options.attrs = renderFallback(
@@ -277,8 +280,8 @@ async function png(options, scale) {
     return customFontsCache[hash];
   }
 
-  const str = await svg(options);
-  const buf = Buffer.from(str, 'utf8');
+  const string = await svg(options);
+  const buf = Buffer.from(string, 'utf8');
 
   const getImage = new Lipo()(buf);
 
@@ -323,7 +326,7 @@ async function getClosestFontName(fontNameOrPath) {
   if (customFontsCache[hash]) return customFontsCache[hash];
   const fontNames = await getAvailableFontNames();
   const fontNamesByDistance = _.sortBy(
-    _.map(fontNames, name => {
+    _.map(fontNames, (name) => {
       return {
         name,
         distance: levenshtein.get(
@@ -367,14 +370,14 @@ async function getFontPathsByName() {
 
 async function getAvailableFontPaths() {
   if (customFontsCache.fontPaths) return customFontsCache.fontPaths;
-  let fonts = await Promise.all(useTypes.map(type => osFonts.getAll(type)));
+  let fonts = await Promise.all(useTypes.map((type) => osFonts.getAll(type)));
   fonts = _.flatten(fonts);
-  const arr = [];
+  const array = [];
   // add fonts from system
   for (const element of fonts) {
     let ext = path.extname(element);
     if (ext.indexOf('.') === 0) ext = ext.slice(1);
-    if (fontExtensions.includes(ext)) arr.push(element);
+    if (fontExtensions.includes(ext)) array.push(element);
   }
 
   // add node_modules folder
@@ -384,11 +387,11 @@ async function getAvailableFontPaths() {
   for (const element of nodeModuleFonts) {
     let ext = path.extname(element);
     if (ext.indexOf('.') === 0) ext = ext.slice(1);
-    if (fontExtensions.includes(ext)) arr.push(element);
+    if (fontExtensions.includes(ext)) array.push(element);
   }
 
   // Sort the fonts A-Z
-  const fontPaths = arr.sort();
+  const fontPaths = array.sort();
   customFontsCache.fontPaths = fontPaths;
   return fontPaths;
 }
@@ -396,7 +399,7 @@ async function getAvailableFontPaths() {
 async function getAvailableFontNames() {
   if (customFontsCache.fontNames) return customFontsCache.fontNames;
   const fontPaths = await getAvailableFontPaths();
-  const fontNames = _.map(fontPaths, fontPath =>
+  const fontNames = _.map(fontPaths, (fontPath) =>
     path.basename(fontPath, path.extname(fontPath))
   );
   customFontsCache.fontNames = fontNames;
