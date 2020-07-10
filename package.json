@@ -4,7 +4,7 @@
   "version": "4.0.2",
   "author": "Nick Baugh <niftylettuce@gmail.com>",
   "ava": {
-    "timeout": "10s"
+    "timeout": "1m"
   },
   "bugs": "https://github.com/ladjs/custom-fonts-in-emails/issues",
   "commitlint": {
