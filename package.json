@@ -27,7 +27,7 @@
     "pkg-dir": "^4.2.0",
     "rev-hash": "^3.0.0",
     "text-to-svg": "^3.1.5",
-    "universalify": "^0.1.2"
+    "universalify": "^0.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.4",
