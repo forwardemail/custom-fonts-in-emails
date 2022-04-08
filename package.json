@@ -19,7 +19,7 @@
     "cheerio": "^1.0.0-rc.3",
     "debug": "^4.1.1",
     "fast-levenshtein": "^2.0.6",
-    "fast-safe-stringify": "^2.0.7",
+    "fast-safe-stringify": "^2.1.1",
     "is-string-and-not-blank": "^0.0.2",
     "lipo": "^1.0.1",
     "lodash": "^4.17.19",
