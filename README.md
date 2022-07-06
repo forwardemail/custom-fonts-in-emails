@@ -1,7 +1,6 @@
 # custom-fonts-in-emails
 
-[![build status](https://img.shields.io/travis/ladjs/custom-fonts-in-emails.svg)](https://travis-ci.org/ladjs/custom-fonts-in-emails)
-[![code coverage](https://img.shields.io/codecov/c/github/ladjs/custom-fonts-in-emails.svg)](https://codecov.io/gh/ladjs/custom-fonts-in-emails)
+[![build status](https://github.com/ladjs/custom-fonts-in-emails/actions/workflows/ci.yml/badge.svg)](https://github.com/ladjs/custom-fonts-in-emails/actions/workflows/ci.yml)
 [![code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![made with lass](https://img.shields.io/badge/made_with-lass-95CC28.svg)](https://lass.js.org)
@@ -11,11 +10,11 @@
 
 * :art: Outputs optimized SVG, PNG, and Base64 inlined images with optional support for [**@2x**](https://github.com/2x) and [**@3x**](https://github.com/3x) Retina versions (uses the incredibly fast and performant [sharp][sharp]).
 * :bulb: Automatic smart-detection of font names spelled incorrectly (or with the wrong extension) with 50% accuracy (uses [fast-levenshtein][fast-levenshtein] and checks for at least 50% distance match).
-* :crystal_ball: Detects user, local, network, system fonts, and `node_modules` folder fonts using [os-fonts][os-fonts] and [pkg-up][pkg-up] (e.g. you don't need to write `Arial.ttf`, you can just write `Arial`).
+* :crystal\_ball: Detects user, local, network, system fonts, and `node_modules` folder fonts using [os-fonts][os-fonts] and [pkg-up][pkg-up] (e.g. you don't need to write `Arial.ttf`, you can just write `Arial`).
 * :tada: Supports all WOFF, OTF, and TTF fonts (both with TrueType `glyf` and PostScript `cff` outlines).
 * :sparkles: Use with recommended packages [nodemailer][nodemailer] and [nodemailer-base64-to-s3][nodemailer-base64-to-s3], or simply use [Lad][lad-url] (has this built-in).
 * :pear: Pairs great with [font-awesome-assets][font-awesome-assets] and [juice][juice] (see [Lad's][lad-url] usage as an example).
-* :white_check_mark: Supports offline and missing image support by automatically adding `alt`, `title`, and `style` attributes of `color` and `font-size` based upon the options passed.
+* :white\_check\_mark: Supports offline and missing image support by automatically adding `alt`, `title`, and `style` attributes of `color` and `font-size` based upon the options passed.
 
 
 ## Index
@@ -219,13 +218,13 @@ This is an object of all of the custom fonts cached.
 
 ## Wishlist
 
-* [ ] [svg/svgo#620](https://github.com/svg/svgo/issues/620)
-* [ ] [svg/svgo#619](https://github.com/svg/svgo/issues/619)
-* [ ] [nodebox/opentype.js#238](https://github.com/nodebox/opentype.js/issues/238)
-* [ ] [jergason/recursive-readdir#35](https://github.com/jergason/recursive-readdir/pull/35)
-* [ ] [shrhdk/text-to-svg#20](https://github.com/shrhdk/text-to-svg/issues/20)
-* [ ] [shrhdk/text-to-svg#19](https://github.com/shrhdk/text-to-svg/issues/19)
-* [ ] [shrhdk/text-to-svg#18](https://github.com/shrhdk/text-to-svg/issues/18)
+* \[ ] [svg/svgo#620](https://github.com/svg/svgo/issues/620)
+* \[ ] [svg/svgo#619](https://github.com/svg/svgo/issues/619)
+* \[ ] [nodebox/opentype.js#238](https://github.com/nodebox/opentype.js/issues/238)
+* \[ ] [jergason/recursive-readdir#35](https://github.com/jergason/recursive-readdir/pull/35)
+* \[ ] [shrhdk/text-to-svg#20](https://github.com/shrhdk/text-to-svg/issues/20)
+* \[ ] [shrhdk/text-to-svg#19](https://github.com/shrhdk/text-to-svg/issues/19)
+* \[ ] [shrhdk/text-to-svg#18](https://github.com/shrhdk/text-to-svg/issues/18)
 
 
 ## Credits
@@ -238,7 +237,7 @@ Thanks to the public domain font [GoudyBookletter1911][goudybookletter1911] for 
 [MIT](LICENSE) © Nick Baugh
 
 
-## 
+##
 
 [lad-url]: https://lad.js.org
 

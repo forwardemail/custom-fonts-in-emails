@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
 
-const $ = require('cheerio');
+const $ = require('cheerio').default;
 const _ = require('lodash');
 const revisionHash = require('rev-hash');
 const safeStringify = require('fast-safe-stringify');

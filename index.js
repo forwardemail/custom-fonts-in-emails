@@ -1,9 +1,10 @@
 const fs = require('fs');
 const path = require('path');
+const { Buffer } = require('buffer');
 const { promisify } = require('util');
 
-const $ = require('cheerio');
-const Lipo = require('lipo');
+const $ = require('cheerio').default;
+const sharp = require('sharp');
 const TextToSvg = require('text-to-svg');
 const _ = require('lodash');
 const debug = require('debug')('custom-fonts-in-emails');
@@ -58,64 +59,78 @@ async function setOptions(options) {
   options = _.defaultsDeep(options, defaults);
 
   // Ensure `text` is a string
-  if (!_.isString(options.text)) throw new Error('`text` must be a String');
+  if (!_.isString(options.text)) {
+    throw new TypeError('`text` must be a String');
+  }
 
   // Ensure `fontNameOrPath` is a string and not blank
-  if (!isSANB(options.fontNameOrPath))
+  if (!isSANB(options.fontNameOrPath)) {
     throw new Error('`fontNameOrPath` must be a String and not blank');
+  }
 
   // Convert font size in pixels to number
   // and remove px, so we just convert to digits only
-  if (_.isString(options.fontSize))
+  if (_.isString(options.fontSize)) {
     options.fontSize = Number.parseFloat(options.fontSize);
+  }
 
   // Round to nearest whole pixel
   options.fontSize = Math.round(options.fontSize);
 
   // Ensure it's a number greater than 0
-  if (!_.isNumber(options.fontSize) || options.fontSize <= 0)
+  if (!_.isNumber(options.fontSize) || options.fontSize <= 0) {
     throw new Error(
       '`fontSize` must be a Number or String that is a valid number > than 0'
     );
+  }
 
   // Ensure `fontColor` is a string
-  if (!isSANB(options.fontColor))
+  if (!isSANB(options.fontColor)) {
     throw new Error('`fontColor` must be a String and not blank');
+  }
 
   // Ensure `backgroundColor` is a string
-  if (!isSANB(options.backgroundColor))
+  if (!isSANB(options.backgroundColor)) {
     throw new Error('`backgroundColor` must be a String and not blank');
+  }
 
   // Ensure supportsFallback is a boolean else true
-  if (!_.isBoolean(options.supportsFallback))
-    throw new Error('`supportsFallback` must be a Boolean');
+  if (!_.isBoolean(options.supportsFallback)) {
+    throw new TypeError('`supportsFallback` must be a Boolean');
+  }
 
   // Ensure resizeToFontSize is a boolean else true
-  if (!_.isBoolean(options.resizeToFontSize))
-    throw new Error('`resizeToFontSize` must be a Boolean');
+  if (!_.isBoolean(options.resizeToFontSize)) {
+    throw new TypeError('`resizeToFontSize` must be a Boolean');
+  }
 
   // Ensure trim is a boolean else true
-  if (!_.isBoolean(options.trim)) throw new Error('`trim` must be a Boolean');
+  if (!_.isBoolean(options.trim)) {
+    throw new TypeError('`trim` must be a Boolean');
+  }
 
   // Ensure trimTolerance is a number else 10
   if (
     !_.isNumber(options.trimTolerance) ||
     options.trimTolerance < 1 ||
     options.trimTolerance > 99
-  )
+  ) {
     throw new Error(
       '`trimTolerance` must be a Number between 1 and 99 inclusive'
     );
+  }
 
   // If `textToSvg.attributes.fill` is not set
   // then set it equal to `fontColor`
-  if (!_.isString(options.textToSvg.attributes.fill))
+  if (!_.isString(options.textToSvg.attributes.fill)) {
     options.textToSvg.attributes.fill = options.fontColor;
+  }
 
   // If `textToSvg.fontSize` not set, then we will calculate
   // what the `fontSize` should be based off height of font
-  if (!_.isNumber(options.textToSvg.fontSize))
+  if (!_.isNumber(options.textToSvg.fontSize)) {
     options.textToSvg.fontSize = options.fontSize;
+  }
 
   // If `fontNameOrPath` was not a valid font path (with smart detection)
   // then result to use `getClosestFontName` and `getFontPathByName`
@@ -124,10 +139,11 @@ async function setOptions(options) {
 
   if (_.includes(fontExtensions, ext)) {
     const stats = await stat(path.resolve(options.fontNameOrPath));
-    if (!stats.isFile())
+    if (!stats.isFile()) {
       throw new Error(
         `${path.resolve(options.fontNameOrPath)} was not a valid file`
       );
+    }
 
     options.fontPath = path.resolve(options.fontNameOrPath);
     options.fontName = fontName;
@@ -151,10 +167,11 @@ async function setOptions(options) {
     data = _.compact(data);
 
     // If this was a directory path then throw an error that it was not found
-    if (options.fontNameOrPath.includes(path.sep) && data.length === 0)
+    if (options.fontNameOrPath.includes(path.sep) && data.length === 0) {
       throw new Error(
         `\`fontNameOrPath\` "${options.fontNameOrPath}" file was not found`
       );
+    }
 
     if (data.length > 0) {
       options.fontName = fontName;
@@ -189,15 +206,19 @@ function applyAttributes($element, attrs) {
 }
 
 async function svg(options) {
+  debug('svg', options);
   options = await setOptions(options);
+  debug('options set', options);
   const hash = revisionHash(`svg:${safeStringify(options)}`);
   if (customFontsCache[hash]) {
     debug(`found customFontsCache result for ${hash}`, customFontsCache[hash]);
     return customFontsCache[hash];
   }
 
+  debug('loading');
   const textToSvg = await load(options.fontPath);
   const string = textToSvg.getSVG(options.text, options.textToSvg);
+  debug('string', string);
   let $svg = $(string);
   const $rect = $('<rect>');
   $rect.attr('width', $svg.attr('width'));
@@ -234,7 +255,7 @@ async function img(options) {
       'base64'
     )}`
   );
-  if (options.supportsFallback)
+  if (options.supportsFallback) {
     options.attrs = renderFallback(
       options.text,
       $svg.attr('height'),
@@ -242,6 +263,8 @@ async function img(options) {
       options.backgroundColor,
       options.attrs
     );
+  }
+
   $img = applyAttributes($img, options.attrs);
   const result = $.html($img);
   customFontsCache[hash] = result;
@@ -249,11 +272,10 @@ async function img(options) {
   return result;
 }
 
-async function png(options, scale) {
-  // Default scale it 1
-  scale = scale || 1;
-
-  if (!_.isNumber(scale)) throw new Error('`scale` must be a Number');
+async function png(options, scale = 1) {
+  if (!_.isNumber(scale)) {
+    throw new TypeError('`scale` must be a Number');
+  }
 
   options = await setOptions(options);
 
@@ -262,11 +284,6 @@ async function png(options, scale) {
   // to optimize the image and remove invisible whitespace
   // but this feature isn't available yet
   // https://github.com/svg/svgo/issues/67
-  //
-  // also I used Sharp directly, but then created Lipo
-  // to alleviate the need for developers to install libvips or worry
-  // about installing extra dependencies on their system
-  // but still allow them to use the brilliance of Sharp
   //
 
   const { fontSize } = options;
@@ -283,22 +300,25 @@ async function png(options, scale) {
   const string = await svg(options);
   const buf = Buffer.from(string, 'utf8');
 
-  const getImage = new Lipo()(buf);
+  const getImage = sharp(buf);
 
-  if (options.trim) getImage.trim(options.trimTolerance);
+  if (options.trim) {
+    getImage.trim(options.trimTolerance);
+  }
 
-  if (options.resizeToFontSize)
+  if (options.resizeToFontSize) {
     getImage.resize(null, Math.round(fontSize * scale));
+  }
 
   const imageBuffer = await getImage.png().toBuffer();
 
-  const metadata = await new Lipo()(imageBuffer).metadata();
+  const metadata = await sharp(imageBuffer).metadata();
 
   let $img = $('<img>');
   $img.attr('width', Math.round(metadata.width / scale));
   $img.attr('height', Math.round(metadata.height / scale));
   $img.attr('src', `data:image/png;base64,${imageBuffer.toString('base64')}`);
-  if (options.supportsFallback)
+  if (options.supportsFallback) {
     options.attrs = renderFallback(
       options.text,
       Math.round(metadata.height / scale),
@@ -306,6 +326,8 @@ async function png(options, scale) {
       options.backgroundColor,
       options.attrs
     );
+  }
+
   $img = applyAttributes($img, options.attrs);
   const result = $.html($img);
   customFontsCache[hash] = result;
@@ -323,18 +345,19 @@ async function png3x(options) {
 
 async function getClosestFontName(fontNameOrPath) {
   const hash = `closestFontName(${fontNameOrPath})`;
-  if (customFontsCache[hash]) return customFontsCache[hash];
+  if (customFontsCache[hash]) {
+    return customFontsCache[hash];
+  }
+
   const fontNames = await getAvailableFontNames();
   const fontNamesByDistance = _.sortBy(
-    _.map(fontNames, (name) => {
-      return {
-        name,
-        distance: levenshtein.get(
-          fontNameOrPath.toLowerCase(),
-          name.toLowerCase()
-        )
-      };
-    }),
+    _.map(fontNames, (name) => ({
+      name,
+      distance: levenshtein.get(
+        fontNameOrPath.toLowerCase(),
+        name.toLowerCase()
+      )
+    })),
     ['distance', 'name']
   );
   // If there were no matches or if the distance
@@ -343,24 +366,32 @@ async function getClosestFontName(fontNameOrPath) {
   if (
     fontNamesByDistance.length === 0 ||
     fontNamesByDistance[0].distance > fontNameOrPath.length / 2
-  )
+  ) {
     throw new Error(
       `"${fontNameOrPath}" was not found, did you forget to install it?`
     );
+  }
+
   customFontsCache[hash] = fontNamesByDistance[0].name;
   return fontNamesByDistance[0].name;
 }
 
 async function getFontPathByName(name) {
   const hash = `fontPathByName(${name})`;
-  if (customFontsCache[hash]) return customFontsCache[hash];
+  if (customFontsCache[hash]) {
+    return customFontsCache[hash];
+  }
+
   const fontPathsByName = await getFontPathsByName();
   customFontsCache[hash] = fontPathsByName[name];
   return fontPathsByName[name];
 }
 
 async function getFontPathsByName() {
-  if (customFontsCache.fontPathsByName) return customFontsCache.fontPathsByName;
+  if (customFontsCache.fontPathsByName) {
+    return customFontsCache.fontPathsByName;
+  }
+
   const fontNames = await getAvailableFontNames();
   const fontPaths = await getAvailableFontPaths();
   const fontPathsByName = _.zipObject(fontNames, fontPaths);
@@ -369,25 +400,39 @@ async function getFontPathsByName() {
 }
 
 async function getAvailableFontPaths() {
-  if (customFontsCache.fontPaths) return customFontsCache.fontPaths;
-  let fonts = await Promise.all(useTypes.map((type) => osFonts.getAll(type)));
-  fonts = _.flatten(fonts);
-  const array = [];
-  // add fonts from system
-  for (const element of fonts) {
-    let ext = path.extname(element);
-    if (ext.indexOf('.') === 0) ext = ext.slice(1);
-    if (fontExtensions.includes(ext)) array.push(element);
+  if (customFontsCache.fontPaths) {
+    return customFontsCache.fontPaths;
   }
 
-  // add node_modules folder
+  let fonts = await Promise.all(useTypes.map((type) => osFonts.getAll(type)));
+  fonts = fonts.flat();
+  const array = [];
+  // Add fonts from system
+  for (const element of fonts) {
+    let ext = path.extname(element);
+    if (ext.indexOf('.') === 0) {
+      ext = ext.slice(1);
+    }
+
+    if (fontExtensions.includes(ext)) {
+      array.push(element);
+    }
+  }
+
+  // Add node_modules folder
+  const packageDir = await pkgDir();
   const nodeModuleFonts = await osFonts.getFontsInDirectory(
-    path.join(pkgDir.sync(), 'node_modules')
+    path.join(packageDir, 'node_modules')
   );
   for (const element of nodeModuleFonts) {
     let ext = path.extname(element);
-    if (ext.indexOf('.') === 0) ext = ext.slice(1);
-    if (fontExtensions.includes(ext)) array.push(element);
+    if (ext.indexOf('.') === 0) {
+      ext = ext.slice(1);
+    }
+
+    if (fontExtensions.includes(ext)) {
+      array.push(element);
+    }
   }
 
   // Sort the fonts A-Z
@@ -397,7 +442,10 @@ async function getAvailableFontPaths() {
 }
 
 async function getAvailableFontNames() {
-  if (customFontsCache.fontNames) return customFontsCache.fontNames;
+  if (customFontsCache.fontNames) {
+    return customFontsCache.fontNames;
+  }
+
   const fontPaths = await getAvailableFontPaths();
   const fontNames = _.map(fontPaths, (fontPath) =>
     path.basename(fontPath, path.extname(fontPath))

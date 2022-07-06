@@ -1,7 +1,6 @@
 const path = require('path');
 const _ = require('lodash');
 
-// eslint-disable-next-line unicorn/import-index
 const customFonts = require('../');
 
 const options = {
@@ -18,9 +17,9 @@ const options = {
   fontSize: 40
 };
 
-const data = _.map(['svg', 'img', 'png', 'png2x', 'png3x'], (method) => {
-  return customFonts[method](options);
-});
+const data = _.map(['svg', 'img', 'png', 'png2x', 'png3x'], (method) =>
+  customFonts[method](options)
+);
 _.each(data, (string) => {
   console.log(`<br />\n${string}\n<br />`);
 });

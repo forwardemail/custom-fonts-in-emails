@@ -1,0 +1,32 @@
+name: CI
+on:
+  - push
+  - pull_request
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+        node_version:
+          - 14
+          - 16
+          - 18
+    name: Node ${{ matrix.node_version }} on ${{ matrix.os }}
+    steps:
+      - name: Install fonts
+        run: |
+          sudo apt-get update -qq
+          echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections
+          sudo apt-get install ttf-mscorefonts-installer
+          sudo fc-cache
+      - uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node_version }}
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests
+        run: npm run test
