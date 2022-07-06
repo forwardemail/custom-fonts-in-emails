@@ -1,7 +1,7 @@
 {
   "name": "custom-fonts-in-emails",
   "description": "An extremely easy way to use custom fonts in emails without having to use art software. Made for Lad.",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "author": "Nick Baugh <niftylettuce@gmail.com>",
   "bugs": "https://github.com/ladjs/custom-fonts-in-emails/issues",
   "contributors": [
