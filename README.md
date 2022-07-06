@@ -167,8 +167,6 @@ The `options` argument in all [API](#api) methods is an Object that accepts the 
 
 ## API
 
-> Please note that as of `v1.0.0` this API is synchronous and will block.  For an asynchronous version please use `v0.0.4` of this package.
-
 ### `customFonts.setDefaults(options)`
 
 A function that accepts [options](#options) to set defaults for future use and returns a Promise that resolveswith the new package defaults.
