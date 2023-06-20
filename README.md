@@ -1,12 +1,41 @@
 # custom-fonts-in-emails
 
-[![build status](https://github.com/ladjs/custom-fonts-in-emails/actions/workflows/ci.yml/badge.svg)](https://github.com/ladjs/custom-fonts-in-emails/actions/workflows/ci.yml)
+<!--[![build status](https://github.com/ladjs/custom-fonts-in-emails/actions/workflows/ci.yml/badge.svg)](https://github.com/ladjs/custom-fonts-in-emails/actions/workflows/ci.yml)-->
+
 [![code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![made with lass](https://img.shields.io/badge/made_with-lass-95CC28.svg)](https://lass.js.org)
 [![license](https://img.shields.io/github/license/ladjs/custom-fonts-in-emails.svg)](LICENSE)
 
 **An extremely easy way to use custom fonts in emails without having to use art software.**
+
+
+## Table of Contents
+
+* [Features](#features)
+* [What does this do](#what-does-this-do)
+  * [Old Approach](#old-approach)
+  * [New Approach](#new-approach)
+* [Examples](#examples)
+* [Install](#install)
+* [Usage](#usage)
+* [Options](#options)
+  * [textToSvg](#texttosvg)
+* [API](#api)
+  * [`customFonts.setDefaults(options)`](#customfontssetdefaultsoptions)
+  * [`customFonts.setOptions(options)`](#customfontssetoptionsoptions)
+  * [`customFonts.svg(options)`](#customfontssvgoptions)
+  * [`customFonts.img(options)`](#customfontsimgoptions)
+  * [`customFonts.png(options, scale)`](#customfontspngoptions-scale)
+  * [`customFonts.png2x(options)`](#customfontspng2xoptions)
+  * [`customFonts.png3x(options)`](#customfontspng3xoptions)
+  * [`customFonts.getAvailableFontPaths()`](#customfontsgetavailablefontpaths)
+  * [`customFonts.getAvailableFontNames()`](#customfontsgetavailablefontnames)
+  * [`customFonts.customFontsCache`](#customfontscustomfontscache)
+* [License](#license)
+
+
+## Features
 
 * :art: Outputs optimized SVG, PNG, and Base64 inlined images with optional support for [**@2x**](https://github.com/2x) and [**@3x**](https://github.com/3x) Retina versions (uses the incredibly fast and performant [sharp][sharp]).
 * :bulb: Automatic smart-detection of font names spelled incorrectly (or with the wrong extension) with 50% accuracy (uses [fast-levenshtein][fast-levenshtein] and checks for at least 50% distance match).
@@ -15,23 +44,6 @@
 * :sparkles: Use with recommended packages [nodemailer][nodemailer] and [nodemailer-base64-to-s3][nodemailer-base64-to-s3], or simply use [Lad][lad-url] (has this built-in).
 * :pear: Pairs great with [font-awesome-assets][font-awesome-assets] and [juice][juice] (see [Lad's][lad-url] usage as an example).
 * :white\_check\_mark: Supports offline and missing image support by automatically adding `alt`, `title`, and `style` attributes of `color` and `font-size` based upon the options passed.
-
-
-## Index
-
-* [What does this do?](#what-does-this-do)
-  * [Old Approach](#old-approach)
-  * [New Approach](#new-approach)
-* [Examples](#examples)
-* [Install](#install)
-* [Usage](#usage)
-* [Options](#options)
-* [API](#api)
-* [Wishlist](#wishlist)
-* [Credits](#credits)
-* [License](#license)
-
-> **Don't want to configure this yourself?**  Try [Lad][lad-url]!
 
 
 ## What does this do
@@ -213,7 +225,7 @@ The same as `customFonts.getAvailableFontPaths`, except it returns font names in
 
 This is an object of all of the custom fonts cached.
 
-
+<!--
 ## Wishlist
 
 * \[ ] [svg/svgo#620](https://github.com/svg/svgo/issues/620)
@@ -228,6 +240,7 @@ This is an object of all of the custom fonts cached.
 ## Credits
 
 Thanks to the public domain font [GoudyBookletter1911][goudybookletter1911] for test purpose and our friends in [the Slack channel][slack-url] for support.
+-->
 
 
 ## License
@@ -238,8 +251,6 @@ Thanks to the public domain font [GoudyBookletter1911][goudybookletter1911] for 
 ##
 
 [lad-url]: https://lad.js.org
-
-[slack-url]: https://join.slack.com/t/ladjs/shared_invite/zt-fqei6z11-Bq2trhwHQxVc5x~ifiZG0g
 
 [nodemailer]: https://github.com/nodemailer/nodemailer
 
