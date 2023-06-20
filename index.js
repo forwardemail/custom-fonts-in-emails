@@ -1,8 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const { Buffer } = require('buffer');
-const { promisify } = require('util');
-
+const fs = require('node:fs');
+const path = require('node:path');
+const { Buffer } = require('node:buffer');
+const { promisify } = require('node:util');
 const $ = require('cheerio').default;
 const sharp = require('sharp');
 const TextToSvg = require('text-to-svg');

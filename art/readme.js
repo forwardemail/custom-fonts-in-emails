@@ -1,6 +1,5 @@
-const path = require('path');
+const path = require('node:path');
 const _ = require('lodash');
-
 const customFonts = require('../');
 
 const options = {

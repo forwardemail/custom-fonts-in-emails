@@ -1,13 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const { promisify } = require('util');
-
+const fs = require('node:fs');
+const path = require('node:path');
+const { promisify } = require('node:util');
 const $ = require('cheerio').default;
 const _ = require('lodash');
 const revisionHash = require('rev-hash');
 const safeStringify = require('fast-safe-stringify');
 const test = require('ava');
-
 const customFonts = require('..');
 
 const text = 'Hello World';
